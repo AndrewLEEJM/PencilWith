@@ -53,81 +53,79 @@ class _MemoPageState extends State<MemoPage> {
     //_groupingGrid();
 
     List<int> dummy = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    return Container(
-        child: Column(
+    return Column(
       children: [
-        Expanded(
-          child: Container(
-              key: _containerKey,
-              //   color: Colors.yellow,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Column(
-                  children: [
-                    Expanded(
-//                      height: 500,
-                      child: CarouselSlider.builder(
-                        itemCount: 3, //page count
-                        options: CarouselOptions(
-                            onPageChanged: (index, reason) {
-                              setState(() {
-                                _current = index;
-                              });
-                            },
-                            //height: 500,
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            viewportFraction: 0.8,
-                            aspectRatio: 1.2,
-                            initialPage: 0,
-                            enableInfiniteScroll: false),
-                        itemBuilder: (context, index, realIndex) => GridView(
-                          scrollDirection: Axis.vertical,
-                          reverse: false,
-                          controller: ScrollController(),
-                          physics: ScrollPhysics(),
-                          //padding: EdgeInsets.all(0.0),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            // mainAxisSpacing: 5,
-                            // crossAxisSpacing: 5,
-                            crossAxisCount: 3,
-                          ),
-                          children: dummy
-                              .map((e) => Card(
-                                    child: Text('$e st'),
-                                    color: Colors.red,
-                                  ))
-                              .toList(),
+        Container(
+            height: 360,
+            //key: _containerKey,
+            //color: Colors.yellow,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: CarouselSlider.builder(
+                      itemCount: 3, //page count
+                      options: CarouselOptions(
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _current = index;
+                            });
+                          },
+                          //height: 500,
+                          autoPlay: false,
+                          enlargeCenterPage: true,
+                          viewportFraction: 0.8,
+                          aspectRatio: 16 / 12,
+                          initialPage: 0,
+                          enableInfiniteScroll: false),
+                      itemBuilder: (context, index, realIndex) => GridView(
+                        scrollDirection: Axis.vertical,
+                        reverse: false,
+                        controller: ScrollController(),
+                        physics: ScrollPhysics(),
+                        //padding: EdgeInsets.all(0.0),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 16 / 14,
+                          // mainAxisSpacing: 5,
+                          // crossAxisSpacing: 5,
+                          crossAxisCount: 3,
                         ),
+                        children: dummy
+                            .map((e) => Card(
+                                  child: Text('$e st'),
+                                  color: Colors.red,
+                                ))
+                            .toList(),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: dummy.map((url) {
-                        int index = dummy.indexOf(url);
-                        return Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 10.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _current == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              )),
-          flex: 6,
-        ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    //crossAxisAlignment: CrossAxisAlignment.start,
+                    children: dummy.map((url) {
+                      int index = dummy.indexOf(url);
+                      return Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _current == index
+                              ? Color.fromRGBO(0, 0, 0, 0.9)
+                              : Color.fromRGBO(0, 0, 0, 0.4),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            )),
         Align(
           child: Text(
-            'Out Line',
+            '    Out Line',
             style: GoogleFonts.lato(
               textStyle: Theme.of(context).textTheme.headline4,
               fontSize: 20,
@@ -146,7 +144,7 @@ class _MemoPageState extends State<MemoPage> {
           flex: 3,
         ),
       ],
-    ));
+    );
   }
 
   Widget _getTodoList() {
@@ -175,7 +173,7 @@ class _MemoPageState extends State<MemoPage> {
         });
   }
 
-  List _groupingGrid() {
+  List _makingGridList() {
     final int gridCount = 9;
 
     List<Widget> gridGroupList = [Text('a'), Text('b')];
