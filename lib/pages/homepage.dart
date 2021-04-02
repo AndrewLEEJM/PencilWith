@@ -18,11 +18,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Controller c = Get.find();
 
-    print(novels[0].toString());
-    print(novels[0]['title'].toString());
-
-    //String _selectWork = '소설#1';
-
     List<Widget> subPageList = [MemoPage(), WritePage(), FeedBackPage()];
     return DefaultTabController(
       length: 3,
