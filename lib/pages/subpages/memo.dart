@@ -65,6 +65,7 @@ class _MemoPageState extends State<MemoPage> {
                 child: Column(
                   children: [
                     Expanded(
+//                      height: 500,
                       child: CarouselSlider.builder(
                         itemCount: 3, //page count
                         options: CarouselOptions(
@@ -73,11 +74,11 @@ class _MemoPageState extends State<MemoPage> {
                                 _current = index;
                               });
                             },
-                            height: 500,
+                            //height: 500,
                             autoPlay: false,
                             enlargeCenterPage: true,
                             viewportFraction: 0.8,
-                            aspectRatio: 1,
+                            aspectRatio: 1.2,
                             initialPage: 0,
                             enableInfiniteScroll: false),
                         itemBuilder: (context, index, realIndex) => GridView(
@@ -122,7 +123,7 @@ class _MemoPageState extends State<MemoPage> {
                   ],
                 ),
               )),
-          flex: 9,
+          flex: 6,
         ),
         Align(
           child: Text(
