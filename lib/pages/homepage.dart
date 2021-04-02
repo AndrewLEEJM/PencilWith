@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pencilwith/models/dropdownmodel.dart';
 import 'package:pencilwith/pages/subpages/feedback.dart';
 import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/write.dart';
+import 'package:smart_select/smart_select.dart';
 import '../models/getxcontroller.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,9 +13,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String _selectWork = novels[0]['title'];
   @override
   Widget build(BuildContext context) {
     Controller c = Get.find();
+
+    print(novels[0].toString());
+    print(novels[0]['title'].toString());
+
+    //String _selectWork = '소설#1';
 
     List<Widget> subPageList = [MemoPage(), WritePage(), FeedBackPage()];
     return DefaultTabController(
@@ -26,23 +34,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: Container(
-                      color: Colors.yellow,
+                      //color: Colors.yellow,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                _showDialog(context);
-                              },
-                              child: Row(
-                                children: [
-                                  Text('work'),
-                                  Icon(Icons.keyboard_arrow_down)
-                                ],
-                              ),
-                            ),
+                            _getDropDownMenu(),
+                            Icon(Icons.keyboard_arrow_down),
                             Spacer(),
                             Text('저장'),
                           ],
@@ -78,74 +77,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void choiceAction(String choice) {
-    if (choice == Constants.FirstItem) {
-      print('I First Item');
-    } else if (choice == Constants.SecondItem) {
-      print('I Second Item');
-    } else if (choice == Constants.ThirdItem) {
-      print('I Third Item');
-    }
+  Widget _getDropDownMenu() {
+    return SmartSelect<String>.single(
+      title: 'work',
+      placeholder: novels[0]['title'],
+      value: _selectWork,
+      onChange: (selected) {
+        setState(() => _selectWork = selected.value);
+      },
+      choiceItems: S2Choice.listFrom<String, Map>(
+        source: novels,
+        value: (index, item) => item['id'],
+        title: (index, item) => item['title'],
+        group: (index, item) => item['category'],
+      ),
+      choiceGrouped: true,
+      //modalType: S2ModalType.bottomSheet,
+      modalType: S2ModalType.popupDialog,
+      modalFilter: true,
+      tileBuilder: (context, state) {
+        return S2Tile.fromState(
+          state,
+          isTwoLine: true,
+          // leading: const CircleAvatar(
+          //   backgroundImage: NetworkImage(
+          //     'https://source.unsplash.com/xsGxhtAsfSA/100x100',
+          //   ),
+          //),
+        );
+      },
+    );
   }
-}
-
-_showDialog(BuildContext ctx) {
-  showDialog(
-    context: ctx,
-    builder: (BuildContext context) {
-      // return alert dialog object
-      return AlertDialog(
-        title: new Text('I am Title'),
-        content: Container(
-          height: 150.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              new Row(
-                children: <Widget>[
-                  new Icon(Icons.toys),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: new Text('First Item'),
-                  ),
-                ],
-              ),
-              new SizedBox(
-                height: 20.0,
-              ),
-              new Row(
-                children: <Widget>[
-                  new Icon(Icons.toys),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: new Text('Second Item'),
-                  ),
-                ],
-              ),
-              new SizedBox(
-                height: 20.0,
-              ),
-              new Row(
-                children: <Widget>[
-                  new Icon(Icons.toys),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-class Constants {
-  static const String FirstItem = 'First Item';
-  static const String SecondItem = 'Second Item';
-  static const String ThirdItem = 'Third Item';
-
-  static const List<String> choices = <String>[
-    FirstItem,
-    SecondItem,
-    ThirdItem,
-  ];
 }
