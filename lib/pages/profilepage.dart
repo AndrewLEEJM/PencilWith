@@ -43,35 +43,45 @@ Widget imageSection = Container(
 
 Widget infoSection = Container(
   padding: const EdgeInsets.all(12),
-  child: Center(
-    child: Column(children: [
+  // color: Colors.pink,
+  child: Column(
+    children: [
       RowInfo(tag: '닉네임', val: '냥냥이'),
       RowInfo(tag: '성별', val: '남성'),
       RowInfo(tag: '생년월일', val: '2000년 07월 07일'),
       RowInfo(tag: '지역', val: '서울'),
       RowInfo(tag: '작가역량', val: '입문'),
-    ], mainAxisAlignment: MainAxisAlignment.center
-        // mainAxisSize: MainAxisSize.min,
-        ),
+    ],
   ),
 );
 
 Widget RowInfo({String tag, String val}) {
   return Container(
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Row(children: [
         Container(
-          width: 130,
+          alignment: Alignment.center,
+          width: 140,
           child: Text(
             tag,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
         ),
-        Text(
-          val,
-          style: TextStyle(fontSize: 15),
-        ),
-      ], mainAxisAlignment: MainAxisAlignment.start));
+        Container(
+          width: 140,
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Colors.grey,
+            width: 1,
+          ))),
+          alignment: Alignment.center,
+          child: Text(
+            val,
+            style: TextStyle(fontSize: 15),
+          ),
+        )
+      ], mainAxisAlignment: MainAxisAlignment.center));
 }
 
 Widget btnGroup = Container(
