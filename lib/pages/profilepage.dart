@@ -43,7 +43,6 @@ Widget imageSection = Container(
 
 Widget infoSection = Container(
   padding: const EdgeInsets.all(12),
-  // color: Colors.pink,
   child: Column(
     children: [
       RowInfo(tag: '닉네임', val: '냥냥이'),
@@ -81,7 +80,7 @@ Widget RowInfo({String tag, String val}) {
             style: TextStyle(fontSize: 15),
           ),
         )
-      ], mainAxisAlignment: MainAxisAlignment.center));
+      ], mainAxisAlignment: MainAxisAlignment.spaceEvenly));
 }
 
 Widget btnGroup = Container(
@@ -106,13 +105,16 @@ Widget intoroduceSection = Container(
     children: [
       Text('자기소개'),
       Container(
-        height: 100,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 1,
+          height: 100,
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 1,
+            ),
           ),
-        ),
-      )
+          child: SingleChildScrollView(
+            child: Text(
+                '냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥'),
+          )),
     ],
   ),
 );
