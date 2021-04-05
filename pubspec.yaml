@@ -33,6 +33,8 @@ dependencies:
   carousel_slider: ^3.0.0
   google_fonts: ^1.1.2
   zefyr: ^0.12.0
+  quill_delta: ^1.1.3
+  image_picker: ^0.6.1 #이건 고려중...
 
 dev_dependencies:
   flutter_test:

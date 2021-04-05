@@ -19,14 +19,20 @@ class _MemoPageState extends State<MemoPage> {
   int _current = 0;
   List modifiedPostItList = [];
 
-  Controller c = Get.find();
+  //Controller c = Get.find();
+
+  @override
+  void didChangeDependencies() {
+    // FocusScopeNode currentFocus = FocusScope.of(context);
+    // currentFocus.unfocus();
+    // FocusScope.of(context).unfocus();
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
     super.initState();
-
     modifiedPostItList = _makingGridList();
-    //print(modifiedPostItList[2].toString());
 
     ///세로 고정
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -59,8 +65,6 @@ class _MemoPageState extends State<MemoPage> {
 
   @override
   Widget build(BuildContext context) {
-    //_groupingGrid();
-
     return Column(
       children: [
         Container(
@@ -102,15 +106,16 @@ class _MemoPageState extends State<MemoPage> {
                         ),
                         children: modifiedPostItList[index]
                             .map<Widget>((e) => Card(
+                                  color: Colors.grey[300],
                                   child: Center(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8.5),
                                       child: Text(
                                         '${e['title']}',
-                                        style: TextStyle(
-                                          fontSize: c.width * 0.03,
-                                        ),
+                                        style: TextStyle(fontSize: 10
+                                            //fontSize: c.width * 0.03,
+                                            ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -120,24 +125,26 @@ class _MemoPageState extends State<MemoPage> {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-                    children: modifiedPostItList.map((url) {
-                      int index = modifiedPostItList.indexOf(url);
-                      return Container(
-                        width: 8.0,
-                        height: 8.0,
-                        margin: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 2.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _current == index
-                              ? Color.fromRGBO(0, 0, 0, 0.9)
-                              : Color.fromRGBO(0, 0, 0, 0.4),
-                        ),
-                      );
-                    }).toList(),
+                  SingleChildScrollView(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      //crossAxisAlignment: CrossAxisAlignment.start,
+                      children: modifiedPostItList.map((url) {
+                        int index = modifiedPostItList.indexOf(url);
+                        return Container(
+                          width: 8.0,
+                          height: 8.0,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 0.0, horizontal: 2.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _current == index
+                                ? Color.fromRGBO(0, 0, 0, 0.9)
+                                : Color.fromRGBO(0, 0, 0, 0.4),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ],
               ),
@@ -208,7 +215,6 @@ class _MemoPageState extends State<MemoPage> {
       } else {
         restrictCount = maxGridCount;
       }
-      print(restrictCount);
       for (int j = 0; j < restrictCount; j++) {
         tmpList.add(postItModel[index]);
         index++;
