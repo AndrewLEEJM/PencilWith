@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -16,6 +18,8 @@ class _MemoPageState extends State<MemoPage> {
   var containerHeight;
   int _current = 0;
   List modifiedPostItList = [];
+
+  Controller c = Get.find();
 
   @override
   void initState() {
@@ -85,47 +89,56 @@ class _MemoPageState extends State<MemoPage> {
                           initialPage: 0,
                           enableInfiniteScroll: false),
                       itemBuilder: (context, index, realIndex) => GridView(
-                          scrollDirection: Axis.vertical,
-                          reverse: false,
-                          controller: ScrollController(),
-                          physics: ScrollPhysics(),
-                          //padding: EdgeInsets.all(0.0),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: 16 / 14,
-                            // mainAxisSpacing: 5,
-                            // crossAxisSpacing: 5,
-                            crossAxisCount: 3,
-                          ),
-                          children: modifiedPostItList[index]
-                              .map<Widget>((e) => Card(
-                                    child: Text(
-                                      '${e['title']}',
-                                      overflow: TextOverflow.ellipsis,
+                        scrollDirection: Axis.vertical,
+                        reverse: false,
+                        controller: ScrollController(),
+                        physics: ScrollPhysics(),
+                        //padding: EdgeInsets.all(0.0),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 16 / 14,
+                          // mainAxisSpacing: 5,
+                          // crossAxisSpacing: 5,
+                          crossAxisCount: 3,
+                        ),
+                        children: modifiedPostItList[index]
+                            .map<Widget>((e) => Card(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.5),
+                                      child: Text(
+                                        '${e['title']}',
+                                        style: TextStyle(
+                                          fontSize: c.width * 0.03,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ))
-                              .toList()),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   //crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: modifiedPostItList.map((url) {
-                  //     int index = modifiedPostItList.indexOf(url);
-                  //     return Container(
-                  //       width: 8.0,
-                  //       height: 8.0,
-                  //       margin: EdgeInsets.symmetric(
-                  //           vertical: 10.0, horizontal: 2.0),
-                  //       decoration: BoxDecoration(
-                  //         shape: BoxShape.circle,
-                  //         color: _current == index
-                  //             ? Color.fromRGBO(0, 0, 0, 0.9)
-                  //             : Color.fromRGBO(0, 0, 0, 0.4),
-                  //       ),
-                  //     );
-                  //   }).toList(),
-                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    //crossAxisAlignment: CrossAxisAlignment.start,
+                    children: modifiedPostItList.map((url) {
+                      int index = modifiedPostItList.indexOf(url);
+                      return Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _current == index
+                              ? Color.fromRGBO(0, 0, 0, 0.9)
+                              : Color.fromRGBO(0, 0, 0, 0.4),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ],
               ),
             )),
@@ -159,6 +172,7 @@ class _MemoPageState extends State<MemoPage> {
         itemCount: todoList.length,
         itemBuilder: (context, index) {
           return CheckboxListTile(
+            subtitle: Text('${todoList[index]['title']}'),
             controlAffinity: ListTileControlAffinity.leading,
             onChanged: (value) {
               setState(() {
