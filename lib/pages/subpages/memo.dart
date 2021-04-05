@@ -12,7 +12,7 @@ class MemoPage extends StatefulWidget {
 }
 
 class _MemoPageState extends State<MemoPage> {
-  LabeledGlobalKey _containerKey = LabeledGlobalKey('containerKey');
+  //LabeledGlobalKey _containerKey = LabeledGlobalKey('containerKey');
   var containerHeight;
   int _current = 0;
   List modifiedPostItList = [];
@@ -107,25 +107,25 @@ class _MemoPageState extends State<MemoPage> {
                               .toList()),
                     ),
                   ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   //crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: modifiedPostItList.map((url) {
-                  //     int index = modifiedPostItList.indexOf(url);
-                  //     return Container(
-                  //       width: 8.0,
-                  //       height: 8.0,
-                  //       margin: EdgeInsets.symmetric(
-                  //           vertical: 10.0, horizontal: 2.0),
-                  //       decoration: BoxDecoration(
-                  //         shape: BoxShape.circle,
-                  //         color: _current == index
-                  //             ? Color.fromRGBO(0, 0, 0, 0.9)
-                  //             : Color.fromRGBO(0, 0, 0, 0.4),
-                  //       ),
-                  //     );
-                  //   }).toList(),
-                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    //crossAxisAlignment: CrossAxisAlignment.start,
+                    children: modifiedPostItList.map((url) {
+                      int index = modifiedPostItList.indexOf(url);
+                      return Container(
+                        width: 8.0,
+                        height: 8.0,
+                        margin: EdgeInsets.symmetric(
+                            vertical: 0.0, horizontal: 2.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _current == index
+                              ? Color.fromRGBO(0, 0, 0, 0.9)
+                              : Color.fromRGBO(0, 0, 0, 0.4),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ],
               ),
             )),
