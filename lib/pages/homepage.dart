@@ -42,7 +42,10 @@ class _HomePageState extends State<HomePage> {
                             _getDropDownMenu(),
                             Icon(Icons.keyboard_arrow_down),
                             Spacer(),
-                            Text('저장'),
+                            GestureDetector(
+                              child: Text('저장'),
+                              onTap: () => print('save'),
+                            ),
                           ],
                         ),
                       ),

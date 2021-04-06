@@ -12,7 +12,7 @@ class MemoPage extends StatefulWidget {
 }
 
 class _MemoPageState extends State<MemoPage> {
-  LabeledGlobalKey _containerKey = LabeledGlobalKey('containerKey');
+  //LabeledGlobalKey _containerKey = LabeledGlobalKey('containerKey');
   var containerHeight;
   int _current = 0;
   List modifiedPostItList = [];
@@ -22,7 +22,6 @@ class _MemoPageState extends State<MemoPage> {
     super.initState();
 
     modifiedPostItList = _makingGridList();
-    //print(modifiedPostItList[2].toString());
 
     ///세로 고정
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -99,9 +98,11 @@ class _MemoPageState extends State<MemoPage> {
                           ),
                           children: modifiedPostItList[index]
                               .map<Widget>((e) => Card(
-                                    child: Text(
-                                      '${e['title']}',
-                                      overflow: TextOverflow.ellipsis,
+                                    child: Center(
+                                      child: Text(
+                                        '${e['title']}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ))
                               .toList()),
@@ -127,25 +128,6 @@ class _MemoPageState extends State<MemoPage> {
                         );
                       }).toList(),
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-                    children: modifiedPostItList.map((url) {
-                      int index = modifiedPostItList.indexOf(url);
-                      return Container(
-                        width: 8.0,
-                        height: 8.0,
-                        margin: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 2.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _current == index
-                              ? Color.fromRGBO(0, 0, 0, 0.9)
-                              : Color.fromRGBO(0, 0, 0, 0.4),
-                        ),
-                      );
-                    }).toList(),
                   ),
                 ],
               ),
@@ -216,7 +198,6 @@ class _MemoPageState extends State<MemoPage> {
       } else {
         restrictCount = maxGridCount;
       }
-      print(restrictCount);
       for (int j = 0; j < restrictCount; j++) {
         tmpList.add(postItModel[index]);
         index++;

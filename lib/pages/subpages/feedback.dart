@@ -4,17 +4,17 @@ import 'package:pencilwith/models/feedbackmodel.dart';
 class FeedBackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(child: _feedbackPage());
+    //return SingleChildScrollView(child: _feedbackPage());
 
-    //   Scaffold(
-    //   body: _feedbackPage(),
-    //   floatingActionButton: FloatingActionButton(
-    //     backgroundColor: Colors.grey[400],
-    //     child: Icon(
-    //       Icons.add,
-    //     ),
-    //   ),
-    // );
+    return Scaffold(
+      body: SingleChildScrollView(child: _feedbackPage()),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.grey[400],
+        child: Icon(
+          Icons.add,
+        ),
+      ),
+    );
   }
 
   Widget _feedbackPage() {

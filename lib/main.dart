@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:pencilwith/pages/mainpage.dart';
+import 'package:pencilwith/pages/termspage.dart';
 import 'models/getxcontroller.dart';
 
 void main() => runApp(GetMaterialApp(
@@ -120,6 +121,7 @@ class MyApp extends StatelessWidget {
   }
 
   void _moveNextPage() {
-    Get.off(() => MainPage());
+    //Get.off(() => MainPage());
+    Get.off(() => TermsPage());
   }
 }
