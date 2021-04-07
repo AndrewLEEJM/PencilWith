@@ -14,14 +14,18 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _selectWork = novels[0]['title'];
+  GlobalKey _scaffold = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    Controller c = Get.find();
+//    Controller c = Get.find();
 
     List<Widget> subPageList = [MemoPage(), WritePage(), FeedBackPage()];
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+          key: _scaffold,
+          resizeToAvoidBottomInset: true,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(100),
             child: Container(
@@ -38,32 +42,38 @@ class _HomePageState extends State<HomePage> {
                             _getDropDownMenu(),
                             Icon(Icons.keyboard_arrow_down),
                             Spacer(),
-                            Text('저장'),
+                            GestureDetector(
+                              child: Text('저장'),
+                              onTap: () => print('save'),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  TabBar(isScrollable: false, tabs: [
-                    Tab(
-                      child: Text(
-                        '메모모음',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        '글쓰기',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        '피드백',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ])
+                  TabBar(
+                      isScrollable: false,
+                      indicatorColor: Colors.grey[400],
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            '메모모음',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            '글쓰기',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            '피드백',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ])
                 ],
               ),
             ),
@@ -89,11 +99,12 @@ class _HomePageState extends State<HomePage> {
       choiceGrouped: true,
       //modalType: S2ModalType.bottomSheet,
       modalType: S2ModalType.popupDialog,
-      modalFilter: true,
-      tileBuilder: (context, state) {
+      //modalFilter: true,
+      modalFilter: false,
+      tileBuilder: (ctx, state) {
         return S2Tile.fromState(
           state,
-          isTwoLine: true,
+          isTwoLine: false,
           // leading: const CircleAvatar(
           //   backgroundImage: NetworkImage(
           //     'https://source.unsplash.com/xsGxhtAsfSA/100x100',
