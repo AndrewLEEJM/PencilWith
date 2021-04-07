@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:pencilwith/models/feedbackmodel.dart';
 
-class FeedBackPage extends StatelessWidget {
+class FeedBackPage extends StatefulWidget {
+  @override
+  _FeedBackPageState createState() => _FeedBackPageState();
+}
+
+class _FeedBackPageState extends State<FeedBackPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    //return SingleChildScrollView(child: _feedbackPage());
-
     return Scaffold(
       body: SingleChildScrollView(child: _feedbackPage()),
       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {});
+        },
         backgroundColor: Colors.grey[400],
         child: Icon(
           Icons.add,
