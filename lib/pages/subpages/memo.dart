@@ -67,7 +67,7 @@ class _MemoPageState extends State<MemoPage> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 30.0),
+                    padding: const EdgeInsets.only(top: 29.0),
                     child: CarouselSlider.builder(
                       itemCount: modifiedPostItList.length, //page count
                       options: CarouselOptions(
