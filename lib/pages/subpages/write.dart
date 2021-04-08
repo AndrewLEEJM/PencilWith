@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
-import '../../models/writemodel.dart';
 
 class WritePage extends StatefulWidget {
   @override
@@ -27,8 +24,8 @@ class _WritePageState extends State<WritePage> {
 
   @override
   void dispose() {
-    _zefyrController.dispose();
-    _focusNode.dispose();
+    // _zefyrController.dispose();
+    // _focusNode.dispose();
     super.dispose();
   }
 
