@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
+import '../../models/writemodel.dart';
 
 class WritePage extends StatefulWidget {
   @override
@@ -8,14 +11,16 @@ class WritePage extends StatefulWidget {
 }
 
 class _WritePageState extends State<WritePage> {
+  var _zMode = ZefyrMode.edit;
   ZefyrController _zefyrController;
-  FocusNode _focusNode;
+  FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     final document = _loadDocument();
     _zefyrController = ZefyrController(document);
     _focusNode = FocusNode();
+
     // TODO: implement initState
     super.initState();
   }
@@ -34,13 +39,16 @@ class _WritePageState extends State<WritePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ZefyrScaffold(
-      child: ZefyrEditor(
-        padding: EdgeInsets.all(8),
-        controller: _zefyrController,
-        focusNode: _focusNode,
+    return Scaffold(
+      body: ZefyrScaffold(
+        child: ZefyrEditor(
+          padding: EdgeInsets.all(8),
+          controller: _zefyrController,
+          focusNode: _focusNode,
+          mode: _zMode,
+          autofocus: false,
+        ),
       ),
-    ));
+    );
   }
 }

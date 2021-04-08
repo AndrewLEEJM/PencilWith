@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:pencilwith/pages/mainpage.dart';
+import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'models/getxcontroller.dart';
 
@@ -12,15 +12,56 @@ void main() => runApp(GetMaterialApp(
       debugShowCheckedModeBanner: false,
     ));
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // with WidgetsBindingObserver {
+
+  //final FocusNode focusNode = new FocusNode();
+  // FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    print('start');
+    // WidgetsBinding.instance.addObserver(this);
+    // focusNode.addListener(() {});
+  }
+
+  @override
+  void dispose() {
+    // WidgetsBinding.instance.removeObserver(this);
+    // focusNode.removeListener(focus);
+    // focusNode?.dispose();
+    super.dispose();
+  }
+
+  // @override
+  // void didChangeMetrics() {
+  //   print('aaa');
+  //   if (!mounted) return;
+  //
+  //   if (focusNode.hasFocus && MediaQuery.of(context).viewInsets.bottom > 0.0) {
+  //     print('키보드가 있나?');
+  //   } else {
+  //     print('키보드가 없나?');
+  //   }
+  // }
+
   @override
   Widget build(BuildContext context) {
     Controller c = Get.put(Controller());
     c.width(MediaQuery.of(context).size.width);
+
+    closedKeyboard(context);
+
     return Obx(() => c.width > 0.0
         ? Scaffold(
-            resizeToAvoidBottomInset: false,
-            //resizeToAvoidBottomPadding: true,
+            //resizeToAvoidBottomInset: true,
+            resizeToAvoidBottomPadding: false,
             body: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

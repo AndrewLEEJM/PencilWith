@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pencilwith/models/feedbackmodel.dart';
+import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
 
 class FeedBackPage extends StatefulWidget {
   @override
@@ -21,11 +22,16 @@ class _FeedBackPageState extends State<FeedBackPage> {
 
   @override
   Widget build(BuildContext context) {
+    closedKeyboard(context);
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(child: _feedbackPage()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          setState(() {});
+          setState(() {
+            FocusScope.of(context).requestFocus(new FocusNode());
+          });
         },
         backgroundColor: Colors.grey[400],
         child: Icon(

@@ -5,6 +5,8 @@ import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pencilwith/models/writemodel.dart';
+import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
   @override
@@ -17,10 +19,9 @@ class _MemoPageState extends State<MemoPage> {
   int _current = 0;
   List modifiedPostItList = [];
 
-  @override
+  //@override
   void initState() {
     super.initState();
-
     modifiedPostItList = _makingGridList();
 
     ///세로 고정
@@ -49,110 +50,121 @@ class _MemoPageState extends State<MemoPage> {
 
   @override
   void dispose() {
+    //focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    //_groupingGrid();
-
-    return Column(
-      children: [
-        Container(
-            height: 360,
-            //key: _containerKey,
-            //color: Colors.yellow,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 1.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 29.0),
-                    child: CarouselSlider.builder(
-                      itemCount: modifiedPostItList.length, //page count
-                      options: CarouselOptions(
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          },
-                          //height: 500,
-                          autoPlay: false,
-                          enlargeCenterPage: true,
-                          viewportFraction: 0.8,
-                          aspectRatio: 16 / 12,
-                          initialPage: 0,
-                          enableInfiniteScroll: false),
-                      itemBuilder: (context, index, realIndex) => GridView(
-                          scrollDirection: Axis.vertical,
-                          reverse: false,
-                          controller: ScrollController(),
-                          physics: ScrollPhysics(),
-                          //padding: EdgeInsets.all(0.0),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: 16 / 14,
-                            // mainAxisSpacing: 5,
-                            // crossAxisSpacing: 5,
-                            crossAxisCount: 3,
-                          ),
-                          children: modifiedPostItList[index]
-                              .map<Widget>((e) => Card(
-                                    child: Center(
-                                      child: Text(
-                                        '${e['title']}',
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ))
-                              .toList()),
+    closedKeyboard(context);
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      //resizeToAvoidBottomPadding: false,
+      body: SingleChildScrollView(
+        child: Container(
+          //color: Colors.red,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                  height: 330, //아래쪽에 있는 패딩과 carousel고정 높이 나머지는 변동
+                  //key: _containerKey,
+                  //color: Colors.yellow,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: CarouselSlider.builder(
+                          itemCount: modifiedPostItList.length, //page count
+                          options: CarouselOptions(
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              },
+                              height: 300,
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              viewportFraction: 0.8,
+                              aspectRatio: 16 / 12,
+                              initialPage: 0,
+                              enableInfiniteScroll: false),
+                          itemBuilder: (context, index, realIndex) => GridView(
+                              scrollDirection: Axis.vertical,
+                              reverse: false,
+                              controller: ScrollController(),
+                              physics: ScrollPhysics(),
+                              //padding: EdgeInsets.all(0.0),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                childAspectRatio: 16 / 14,
+                                // mainAxisSpacing: 5,
+                                // crossAxisSpacing: 5,
+                                crossAxisCount: 3,
+                              ),
+                              children: modifiedPostItList[index]
+                                  .map<Widget>((e) => Card(
+                                        child: Center(
+                                          child: Text(
+                                            '${e['title']}',
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList()),
+                        ),
+                      ),
+                      //Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //crossAxisAlignment: CrossAxisAlignment.start,
+                        children: modifiedPostItList.map((url) {
+                          int index = modifiedPostItList.indexOf(url);
+                          return Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 2.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: _current == index
+                                  ? Color.fromRGBO(0, 0, 0, 0.9)
+                                  : Color.fromRGBO(0, 0, 0, 0.4),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  )),
+              Expanded(
+                flex: 1,
+                child: Align(
+                  child: Text(
+                    '    Out Line',
+                    style: GoogleFonts.lato(
+                      textStyle: Theme.of(context).textTheme.headline4,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.italic,
                     ),
                   ),
-                  SingleChildScrollView(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      //crossAxisAlignment: CrossAxisAlignment.start,
-                      children: modifiedPostItList.map((url) {
-                        int index = modifiedPostItList.indexOf(url);
-                        return Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 0.0, horizontal: 2.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: _current == index
-                                ? Color.fromRGBO(0, 0, 0, 0.9)
-                                : Color.fromRGBO(0, 0, 0, 0.4),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
+                  alignment: Alignment.centerLeft,
+                ),
               ),
-            )),
-        Align(
-          child: Text(
-            '    Out Line',
-            style: GoogleFonts.lato(
-              textStyle: Theme.of(context).textTheme.headline4,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.italic,
-            ),
+              Divider(),
+              Expanded(
+                child: Container(
+                  //color: Colors.grey[400],
+                  child: _getTodoList(),
+                ),
+                flex: 5,
+              ),
+            ],
           ),
-          alignment: Alignment.centerLeft,
         ),
-        Divider(),
-        Expanded(
-          child: Container(
-            //color: Colors.grey[400],
-            child: _getTodoList(),
-          ),
-          flex: 3,
-        ),
-      ],
+      ),
     );
   }
 

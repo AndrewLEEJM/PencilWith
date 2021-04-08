@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 final basicContent =
     r'[{"insert":"옛날 옛날 어느날에 한 여인이 산속에..."},{"insert":"\n","attributes":{"heading":3}}]';
 //r'{"insert":"long long time ago..."},{"insert":"\n","attributes":{"heading":2}}]';
