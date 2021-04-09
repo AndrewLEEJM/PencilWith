@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pencilwith/models/dropdownmodel.dart';
 import 'package:pencilwith/pages/subpages/feedback.dart';
 import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/write.dart';
 import 'package:smart_select/smart_select.dart';
-import '../models/getxcontroller.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,18 +12,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String _selectWork = novels[0]['title'];
-  GlobalKey _scaffold = GlobalKey();
+  GlobalKey _dropKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-//    Controller c = Get.find();
-
     List<Widget> subPageList = [MemoPage(), WritePage(), FeedBackPage()];
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-          key: _scaffold,
-          resizeToAvoidBottomInset: true,
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(100),
             child: Container(
@@ -51,29 +45,26 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  TabBar(
-                      isScrollable: false,
-                      indicatorColor: Colors.grey[400],
-                      tabs: [
-                        Tab(
-                          child: Text(
-                            '메모모음',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            '글쓰기',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            '피드백',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ])
+                  TabBar(tabs: [
+                    Tab(
+                      child: Text(
+                        '메모모음',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        '글쓰기',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        '피드백',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ])
                 ],
               ),
             ),
@@ -85,6 +76,7 @@ class _HomePageState extends State<HomePage> {
   Widget _getDropDownMenu() {
     return SmartSelect<String>.single(
       title: 'work',
+      key: _dropKey,
       placeholder: novels[0]['title'],
       value: _selectWork,
       onChange: (selected) {
@@ -100,7 +92,7 @@ class _HomePageState extends State<HomePage> {
       //modalType: S2ModalType.bottomSheet,
       modalType: S2ModalType.popupDialog,
       //modalFilter: true,
-      modalFilter: false,
+      modalFilter: true,
       tileBuilder: (ctx, state) {
         return S2Tile.fromState(
           state,

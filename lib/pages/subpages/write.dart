@@ -7,10 +7,15 @@ class WritePage extends StatefulWidget {
   _WritePageState createState() => _WritePageState();
 }
 
-class _WritePageState extends State<WritePage> {
+class _WritePageState extends State<WritePage>
+    with AutomaticKeepAliveClientMixin {
   var _zMode = ZefyrMode.edit;
   ZefyrController _zefyrController;
   FocusNode _focusNode = FocusNode();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -24,8 +29,8 @@ class _WritePageState extends State<WritePage> {
 
   @override
   void dispose() {
-    // _zefyrController.dispose();
-    // _focusNode.dispose();
+    _zefyrController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -36,8 +41,9 @@ class _WritePageState extends State<WritePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ZefyrScaffold(
+    return Container(
+      child: ZefyrScaffold(
+        key: _scaffoldKey,
         child: ZefyrEditor(
           padding: EdgeInsets.all(8),
           controller: _zefyrController,

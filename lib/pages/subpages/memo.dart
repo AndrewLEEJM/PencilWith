@@ -5,8 +5,6 @@ import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pencilwith/models/writemodel.dart';
-import 'package:pencilwith/pages/subpages/suboptionpages/audiorecorde.dart';
 import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
@@ -20,7 +18,7 @@ class _MemoPageState extends State<MemoPage> {
   int _current = 0;
   List modifiedPostItList = [];
 
-  //@override
+  @override
   void initState() {
     super.initState();
     modifiedPostItList = _makingGridList();
@@ -207,7 +205,8 @@ class _MemoPageState extends State<MemoPage> {
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(30),
                                     topRight: Radius.circular(30))),
-                            child: Center(child: MyRCApp()),
+                            //child: Center(child: MyRCApp()),
+                            child: Center(child: Text('레코드')),
                             height: 300,
                           );
                         });

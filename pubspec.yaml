@@ -36,7 +36,7 @@ dependencies:
   quill_delta: ^1.1.3
   image_picker: ^0.6.1 #이건 고려중...
   circular_check_box: ^1.0.4
-  audio_recorder: ^1.0.2
+  #audio_recorder: ^1.0.2
 
 dev_dependencies:
   flutter_test:
