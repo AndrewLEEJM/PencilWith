@@ -173,64 +173,64 @@ class _MemoPageState extends State<MemoPage> {
               ),
             ),
           ),
-          Align(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  child: Center(
-                      child: Text(
-                    '문자기록',
-                    style: TextStyle(color: Colors.white),
-                  )),
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 0.5, color: Colors.white),
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20))),
-                  height: 40,
-                  width: 250,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                        //backgroundColor: Colors.white.withOpacity(1.0),
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30))),
-                            //child: Center(child: MyRCApp()),
-                            child: Center(child: Text('레코드')),
-                            height: 300,
-                          );
-                        });
-                  },
-                  child: Container(
-                    child: Center(
-                        child: Text(
-                      '음성기록',
-                      style: TextStyle(color: Colors.white),
-                    )),
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 0.5, color: Colors.white),
-                        color: Colors.black,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(20))),
-                    height: 40,
-                    width: 250,
-                  ),
-                ),
-              ],
-            ),
-            alignment: Alignment.bottomCenter,
-          )
+          // Align(
+          //   child: Column(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       Container(
+          //         child: Center(
+          //             child: Text(
+          //           '문자기록',
+          //           style: TextStyle(color: Colors.white),
+          //         )),
+          //         decoration: BoxDecoration(
+          //             border: Border.all(width: 0.5, color: Colors.white),
+          //             color: Colors.black,
+          //             borderRadius: BorderRadius.only(
+          //                 topLeft: Radius.circular(20),
+          //                 topRight: Radius.circular(20))),
+          //         height: 40,
+          //         width: 250,
+          //       ),
+          //       GestureDetector(
+          //         onTap: () {
+          //           showModalBottomSheet(
+          //               //backgroundColor: Colors.white.withOpacity(1.0),
+          //               backgroundColor: Colors.transparent,
+          //               context: context,
+          //               builder: (context) {
+          //                 return Container(
+          //                   decoration: BoxDecoration(
+          //                       color: Colors.grey,
+          //                       borderRadius: BorderRadius.only(
+          //                           topLeft: Radius.circular(30),
+          //                           topRight: Radius.circular(30))),
+          //                   //child: Center(child: MyRCApp()),
+          //                   child: Center(child: Text('레코드')),
+          //                   height: 300,
+          //                 );
+          //               });
+          //         },
+          //         child: Container(
+          //           child: Center(
+          //               child: Text(
+          //             '음성기록',
+          //             style: TextStyle(color: Colors.white),
+          //           )),
+          //           decoration: BoxDecoration(
+          //               border: Border.all(width: 0.5, color: Colors.white),
+          //               color: Colors.black,
+          //               borderRadius: BorderRadius.only(
+          //                   bottomLeft: Radius.circular(20),
+          //                   bottomRight: Radius.circular(20))),
+          //           height: 40,
+          //           width: 250,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          //   alignment: Alignment.bottomCenter,
+          // )
         ],
       ),
     );

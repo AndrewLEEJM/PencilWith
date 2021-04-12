@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
     List<Widget> subPageList = [MemoPage(), WritePage(), FeedBackPage()];
     return DefaultTabController(
       length: 3,
+      initialIndex: 1,
       child: Scaffold(
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(100),
