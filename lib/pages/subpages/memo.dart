@@ -56,6 +56,15 @@ class _MemoPageState extends State<MemoPage> {
   @override
   Widget build(BuildContext context) {
     closedKeyboard(context);
+
+    ///이 설정을 해줘야할듯;;
+    // double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    // double px = 1 / pixelRatio;
+    // print('pixelRatio');
+    // print(pixelRatio);
+    // print(px);
+    // print('px');
+
     return Scaffold(
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},
@@ -68,10 +77,10 @@ class _MemoPageState extends State<MemoPage> {
         children: [
           SingleChildScrollView(
             child: Container(
-              //color: Colors.red,
-              height: MediaQuery.of(context).size.height,
+              //height: MediaQuery.of(context).size.height - 200,
+              height: 510, //전체 사이즈
               child: Column(
-                mainAxisSize: MainAxisSize.max,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                       height: 330, //아래쪽에 있는 패딩과 carousel고정 높이 나머지는 변동
@@ -146,20 +155,17 @@ class _MemoPageState extends State<MemoPage> {
                           ),
                         ],
                       )),
-                  Expanded(
-                    flex: 1,
-                    child: Align(
-                      child: Text(
-                        '    Out Line',
-                        style: GoogleFonts.lato(
-                          textStyle: Theme.of(context).textTheme.headline4,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          fontStyle: FontStyle.italic,
-                        ),
+                  Align(
+                    child: Text(
+                      '    Out Line',
+                      style: GoogleFonts.lato(
+                        textStyle: Theme.of(context).textTheme.headline4,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        fontStyle: FontStyle.italic,
                       ),
-                      alignment: Alignment.centerLeft,
                     ),
+                    alignment: Alignment.centerLeft,
                   ),
                   Divider(),
                   Expanded(
@@ -167,7 +173,7 @@ class _MemoPageState extends State<MemoPage> {
                       //color: Colors.grey[400],
                       child: _getTodoList(),
                     ),
-                    flex: 5,
+//                    flex: 5,
                   ),
                 ],
               ),
@@ -241,27 +247,61 @@ class _MemoPageState extends State<MemoPage> {
         separatorBuilder: (context, index) => Divider(),
         itemCount: todoList.length,
         itemBuilder: (context, index) {
-          return CheckboxListTile(
-            subtitle: Text('${todoList[index]['title']}'),
-            controlAffinity: ListTileControlAffinity.leading,
-            onChanged: (value) {
-              setState(() {
-                todoList[index]['isDone'] = value;
-              });
-            },
-            dense: false,
-            activeColor: Colors.grey,
-            isThreeLine: false,
-            selected: todoList[index]['isDone'], //체크여부
-            value: todoList[index]['isDone'], //체크박스 값(표시)
-            title: !todoList[index]['isDone']
+          return _makeTodoRow(index);
+
+          //   CheckboxListTile(
+          //   subtitle: Text('${todoList[index]['title']}'),
+          //   controlAffinity: ListTileControlAffinity.leading,
+          //   onChanged: (value) {
+          //     setState(() {
+          //       todoList[index]['isDone'] = value;
+          //     });
+          //   },
+          //   dense: false,
+          //   activeColor: Colors.grey,
+          //   isThreeLine: false,
+          //   selected: todoList[index]['isDone'], //체크여부
+          //   value: todoList[index]['isDone'], //체크박스 값(표시)
+          //   title: !todoList[index]['isDone']
+          //       ? Text('${todoList[index]['content']}')
+          //       : Text(
+          //           '${todoList[index]['content']}',
+          //           style: TextStyle(decoration: TextDecoration.lineThrough),
+          //         ),
+          // );
+        });
+  }
+
+  Widget _makeTodoRow(index) {
+    return Container(
+      height: 25,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            todoList[index]['isDone'] = !todoList[index]['isDone'];
+          });
+        },
+        child: Row(
+          children: [
+            Checkbox(
+              value: todoList[index]['isDone'],
+              onChanged: (value) {
+                setState(() {
+                  todoList[index]['isDone'] = value;
+                });
+              },
+            ),
+            !todoList[index]['isDone']
                 ? Text('${todoList[index]['content']}')
                 : Text(
                     '${todoList[index]['content']}',
                     style: TextStyle(decoration: TextDecoration.lineThrough),
                   ),
-          );
-        });
+            //Text('${todoList[index]['content']}')
+          ],
+        ),
+      ),
+    );
   }
 
   List _makingGridList() {

@@ -26,7 +26,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    print('start');
     // WidgetsBinding.instance.addObserver(this);
     // focusNode.addListener(() {});
   }
