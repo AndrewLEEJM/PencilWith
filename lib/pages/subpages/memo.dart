@@ -78,7 +78,7 @@ class _MemoPageState extends State<MemoPage> {
           SingleChildScrollView(
             child: Container(
               //height: MediaQuery.of(context).size.height - 200,
-              height: 510, //전체 사이즈
+              height: 550, //전체 사이즈
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -284,6 +284,7 @@ class _MemoPageState extends State<MemoPage> {
         child: Row(
           children: [
             Checkbox(
+              activeColor: Colors.grey[700],
               value: todoList[index]['isDone'],
               onChanged: (value) {
                 setState(() {
