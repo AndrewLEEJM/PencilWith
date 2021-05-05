@@ -16,6 +16,27 @@ class _AccountState extends State<Account> {
   String selectedDay;
   String selectedLocation;
   String selectedExperience;
+  var years = [];
+  var months = [];
+  var days = [];
+
+  @override
+  initState() {
+    // 부모의 initState호출
+    super.initState();
+    // 이 클래스애 리스너 추가
+    DateTime now = new DateTime.now();
+    for (var i = 1950; i <= now.year; i++) {
+      this.years.add(i.toString());
+    }
+    for (var i = 1; i <= 31; i++) {
+      this.days.add(i.toString());
+      if (i < 13) {
+        this.months.add(i.toString());
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +103,7 @@ class _AccountState extends State<Account> {
               Title(title: '생년월일'),
               DropdownButton(
                   value: this.selectedYear,
-                  items: ['1990', '1991'].map((e) {
+                  items: this.years.map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
                   onChanged: (val) {
@@ -96,20 +117,7 @@ class _AccountState extends State<Account> {
               ),
               DropdownButton(
                   value: this.selectedMonth,
-                  items: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                    '12'
-                  ].map((e) {
+                  items: this.months.map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
                   onChanged: (val) {
@@ -123,39 +131,7 @@ class _AccountState extends State<Account> {
               ),
               DropdownButton(
                   value: this.selectedDay,
-                  items: [
-                    '1',
-                    '2',
-                    '3',
-                    '4',
-                    '5',
-                    '6',
-                    '7',
-                    '8',
-                    '9',
-                    '10',
-                    '11',
-                    '12',
-                    '13',
-                    '14',
-                    '15',
-                    '16',
-                    '17',
-                    '18',
-                    '19',
-                    '20',
-                    '21',
-                    '22',
-                    '23',
-                    '24',
-                    '25',
-                    '26',
-                    '27',
-                    '28',
-                    '29',
-                    '30',
-                    '31'
-                  ].map((e) {
+                  items: this.days.map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
                   onChanged: (val) {
@@ -171,7 +147,24 @@ class _AccountState extends State<Account> {
               Title(title: '지역'),
               DropdownButton(
                   value: this.selectedLocation,
-                  items: ['서울', '대전'].map((e) {
+                  items: [
+                    '서울특별시',
+                    '경기도',
+                    '인천광역시',
+                    '강원도',
+                    '대전광역시',
+                    '세종특별자치시',
+                    '충청북도',
+                    '충청남도',
+                    '광주광역시',
+                    '전라북도',
+                    '전라남도' '대구광역시',
+                    '울산광역시',
+                    '경상북도',
+                    '경상남도',
+                    '부산광역시',
+                    '제주특별자치도'
+                  ].map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
                   onChanged: (val) {
@@ -239,9 +232,39 @@ class _AccountState extends State<Account> {
             ),
           ),
           SizedBox(
-            height: 50,
+            height: 30,
           ),
-          joinBtn,
+          GestureDetector(
+            onTap: () {
+              if (this.selectedYear != null &&
+                  this.selectedExperience != null &&
+                  this.selectedDay != null &&
+                  this.selectedLocation != null &&
+                  this.selectedMonth != null) {
+                Get.off(MainPage());
+              } else {
+                print('no enough value');
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.grey,
+              ),
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              width: double.infinity,
+              height: 60,
+              child: Center(
+                child: Text(
+                  '가입하기',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                  textScaleFactor: 1.5,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -265,30 +288,6 @@ Widget imageSection = Container(
     child: CircleAvatar(
       radius: 70.0,
       backgroundImage: AssetImage('images/cat.jpg'),
-    ),
-  ),
-);
-
-Widget joinBtn = GestureDetector(
-  onTap: () {
-    Get.off(MainPage());
-  },
-  child: Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10),
-      color: Colors.grey,
-    ),
-    margin: EdgeInsets.symmetric(horizontal: 20),
-    width: double.infinity,
-    height: 60,
-    child: Center(
-      child: Text(
-        '가입하기',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-        textScaleFactor: 1.5,
-      ),
     ),
   ),
 );

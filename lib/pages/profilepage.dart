@@ -26,9 +26,14 @@ class ProfilePage extends StatelessWidget {
 }
 
 Widget settingIcon = Row(children: [
-  IconButton(
+  DropdownButton<String>(
     icon: Icon(Icons.settings),
-    onPressed: () => showMessage('IconButton'),
+    items: ['수정', '로그아웃'].map((n) {
+      return DropdownMenuItem<String>(child: Text(n), value: n);
+    }).toList(),
+    onChanged: (val) {
+      showMessage('IconButton');
+    },
   ),
 ], mainAxisAlignment: MainAxisAlignment.end);
 
@@ -91,12 +96,7 @@ Widget btnGroup = Container(
       color: Colors.white,
       onPressed: () => showMessage('친구관리'),
     ),
-    RaisedButton(
-      child: Text('이용안내', style: TextStyle(fontSize: 20)),
-      color: Colors.white,
-      onPressed: () => showMessage('이용안내'),
-    )
-  ], mainAxisAlignment: MainAxisAlignment.spaceEvenly),
+  ], mainAxisAlignment: MainAxisAlignment.center),
 );
 
 Widget intoroduceSection = Container(
