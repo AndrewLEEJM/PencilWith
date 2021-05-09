@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pencilwith/pages/profile/agreement.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -11,33 +12,72 @@ class ProfilePage extends StatelessWidget {
           'P R O F I L E',
           style: TextStyle(color: Colors.black),
         ),
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: Icon(Icons.menu),
+        //     onPressed: () {},
+        //     color: Colors.black,
+        //   )
+        // ],
+        iconTheme: IconThemeData(color: Colors.black),
       ),
+      endDrawer: Drawer(
+          elevation: 20.0,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              UserAccountsDrawerHeader(
+                accountName: Text('냥냥이'),
+                accountEmail: Text('developine.com@gmail.com'),
+              ),
+              ListTile(
+                leading: Icon(Icons.assignment_ind),
+                title: Text('프로필 편집'),
+                onTap: () {
+                  // This line code will close drawer programatically....
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.ballot),
+                title: Text('원고관리'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.article),
+                title: Text('이용약관'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Agreement()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.assignment_return),
+                title: Text('로그아웃'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person_remove_rounded),
+                title: Text('회원탈퇴'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          )),
       body: ListView(
-        children: [
-          settingIcon,
-          imageSection,
-          infoSection,
-          intoroduceSection,
-          btnGroup
-        ],
+        children: [imageSection, infoSection, intoroduceSection],
       ),
     );
   }
 }
 
-Widget settingIcon = Row(children: [
-  DropdownButton<String>(
-    icon: Icon(Icons.settings),
-    items: ['수정', '로그아웃'].map((n) {
-      return DropdownMenuItem<String>(child: Text(n), value: n);
-    }).toList(),
-    onChanged: (val) {
-      showMessage('IconButton');
-    },
-  ),
-], mainAxisAlignment: MainAxisAlignment.end);
-
 Widget imageSection = Container(
+  margin: const EdgeInsets.all(20),
   child: Center(
     child: CircleAvatar(
       radius: 70.0,
@@ -87,17 +127,6 @@ Widget RowInfo({String tag, String val}) {
         )
       ], mainAxisAlignment: MainAxisAlignment.spaceEvenly));
 }
-
-Widget btnGroup = Container(
-  padding: const EdgeInsets.all(12),
-  child: Row(children: [
-    RaisedButton(
-      child: Text('친구관리', style: TextStyle(fontSize: 20)),
-      color: Colors.white,
-      onPressed: () => showMessage('친구관리'),
-    ),
-  ], mainAxisAlignment: MainAxisAlignment.center),
-);
 
 Widget intoroduceSection = Container(
   padding: const EdgeInsets.all(12),
