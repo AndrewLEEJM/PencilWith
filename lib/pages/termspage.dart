@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pencilwith/models/termmodel.dart';
 import 'package:pencilwith/pages/account.dart';
+import 'package:pencilwith/pages/agreement/privacy.dart';
+
+import 'agreement/agreement.dart';
 
 class TermsPage extends StatefulWidget {
   @override
@@ -74,6 +77,25 @@ class _TermsPageState extends State<TermsPage> {
                 ),
                 GestureDetector(
                   onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Agreement()));
+                  },
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 48,
+                        ),
+                        child: Text(
+                          '이용 약관 상세 확인',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
                     setState(() {
                       this.selected2 = !this.selected2;
                     });
@@ -96,6 +118,25 @@ class _TermsPageState extends State<TermsPage> {
                     ],
                   ),
                 ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Privacy()));
+                  },
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 48,
+                        ),
+                        child: Text(
+                          '개인정보 수집 동의서 상세 확인',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
             SizedBox(
@@ -103,7 +144,9 @@ class _TermsPageState extends State<TermsPage> {
             ),
             GestureDetector(
               onTap: () {
-                Get.off(Account());
+                if (this.selected1 && this.selected2) {
+                  Get.off(Account());
+                }
               },
               child: Container(
                 decoration: BoxDecoration(

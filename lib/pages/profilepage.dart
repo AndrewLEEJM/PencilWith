@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pencilwith/pages/profile/agreement.dart';
+
+import 'agreement/agreement.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
