@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pencilwith/pages/profile/manuscript.dart';
 
 import 'agreement/agreement.dart';
 
@@ -43,7 +44,8 @@ class ProfilePage extends StatelessWidget {
                 leading: Icon(Icons.ballot),
                 title: Text('원고관리'),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Manuscript()));
                 },
               ),
               ListTile(
@@ -58,14 +60,22 @@ class ProfilePage extends StatelessWidget {
                 leading: Icon(Icons.assignment_return),
                 title: Text('로그아웃'),
                 onTap: () {
-                  Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CoustomDialog('로그아웃');
+                      });
                 },
               ),
               ListTile(
                 leading: Icon(Icons.person_remove_rounded),
                 title: Text('회원탈퇴'),
                 onTap: () {
-                  Navigator.pop(context);
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CoustomDialog('회원탈퇴');
+                      });
                 },
               )
             ],
@@ -151,4 +161,60 @@ Widget intoroduceSection = Container(
 
 void showMessage(String test) {
   print(test);
+}
+
+class CoustomDialog extends StatelessWidget {
+  final title;
+  CoustomDialog(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        height: 200,
+        child: Column(
+          children: [
+            Expanded(
+                child: Container(
+                    color: Colors.white70,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Text(
+                        '''펜슬위드에서 
+$title하시겠습니까?''',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ))),
+            Expanded(
+                child: Container(
+                    child: ButtonTheme(
+                        minWidth: 200,
+                        child: Column(
+                          children: [
+                            RaisedButton(
+                              onPressed: () {},
+                              color: Colors.white,
+                              child: Text(title,
+                                  style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                            RaisedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              color: Colors.white,
+                              child: Text(
+                                '취소',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            )
+                          ],
+                        ))))
+          ],
+        ),
+      ),
+    );
+  }
 }
