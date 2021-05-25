@@ -244,7 +244,7 @@ class _AccountState extends State<Account> {
           ),
           GestureDetector(
             onTap: () {
-              if (this.selectedYear != null &&
+              /* if (this.selectedYear != null &&
                   this.selectedExperience != null &&
                   this.selectedDay != null &&
                   this.selectedLocation != null &&
@@ -252,7 +252,8 @@ class _AccountState extends State<Account> {
                 Get.off(MainPage());
               } else {
                 print('no enough value');
-              }
+              } */
+              Get.off(MainPage());
             },
             child: Container(
               decoration: BoxDecoration(
