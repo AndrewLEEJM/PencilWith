@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
   @override
@@ -12,15 +17,17 @@ class MemoPage extends StatefulWidget {
 }
 
 class _MemoPageState extends State<MemoPage> {
-  LabeledGlobalKey _containerKey = LabeledGlobalKey('containerKey');
-  var containerHeight;
   int _current = 0;
+
+  bool visibleCheck = false;
+
   @override
   void initState() {
+    Get.find<Controller>().makingGridList2();
     super.initState();
 
     ///세로 고정
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+//    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
     ///build가 실행되어 위젯이 그려진 후 해당 함수 실행
     //WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -50,30 +57,48 @@ class _MemoPageState extends State<MemoPage> {
 
   @override
   Widget build(BuildContext context) {
-    //_groupingGrid();
+    ///지금까지 이것때문에 개짱남
+    //closedKeyboard(context);
 
-    List<int> dummy = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    return Column(
-      children: [
-        Container(
-            height: 360,
-            //key: _containerKey,
-            //color: Colors.yellow,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 1.0),
+    ///이 설정을 해줘야할듯;;
+    // double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    // double px = 1 / pixelRatio;
+    // print('pixelRatio:$pixelRatio');
+    // print('px:$px');
+    //print('height:${MediaQuery.of(context).size.height}');
+
+    var _subPageHeight = 0.0;
+
+    if (Platform.isIOS) {
+      _subPageHeight = MediaQuery.of(context).size.height * 0.76;
+    } else {
+      _subPageHeight = MediaQuery.of(context).size.height * 0.74;
+    }
+
+    final memoPadding = 10.0;
+
+    return SafeArea(
+        child: Container(
+      height: _subPageHeight,
+      child: Column(
+        children: [
+          Expanded(
+              flex: 6,
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 30.0),
+                    padding: const EdgeInsets.only(top: 10.0),
                     child: CarouselSlider.builder(
-                      itemCount: 3, //page count
+                      itemCount: Get.find<Controller>()
+                          .modifiedPostItList
+                          .length, //page count
                       options: CarouselOptions(
                           onPageChanged: (index, reason) {
                             setState(() {
                               _current = index;
                             });
                           },
-                          //height: 500,
+                          height: 300,
                           autoPlay: false,
                           enlargeCenterPage: true,
                           viewportFraction: 0.8,
@@ -81,36 +106,70 @@ class _MemoPageState extends State<MemoPage> {
                           initialPage: 0,
                           enableInfiniteScroll: false),
                       itemBuilder: (context, index, realIndex) => GridView(
-                        scrollDirection: Axis.vertical,
-                        reverse: false,
-                        controller: ScrollController(),
-                        physics: ScrollPhysics(),
-                        //padding: EdgeInsets.all(0.0),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 16 / 14,
-                          // mainAxisSpacing: 5,
-                          // crossAxisSpacing: 5,
-                          crossAxisCount: 3,
-                        ),
-                        children: dummy
-                            .map((e) => Card(
-                                  child: Text('$e st'),
-                                  color: Colors.red,
-                                ))
-                            .toList(),
-                      ),
+                          scrollDirection: Axis.vertical,
+                          reverse: false,
+                          controller: ScrollController(),
+                          physics: ScrollPhysics(),
+                          //padding: EdgeInsets.all(0.0),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            //childAspectRatio: 16 / 14,
+                            childAspectRatio: 16 / 15,
+                            // mainAxisSpacing: 5,
+                            // crossAxisSpacing: 5,
+                            crossAxisCount: 3,
+                          ),
+                          children: Get.find<Controller>()
+                              .modifiedPostItList[index]
+                              .map<Widget>((e) => GestureDetector(
+                                  onTap: () {
+                                    print('${e.content}을 클릭했네예');
+                                  },
+                                  child: Container(
+                                    child: Stack(children: [
+                                      Image.asset('images/posttemplete.png'),
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                            left: memoPadding,
+                                            right: memoPadding,
+                                            top: memoPadding * 1.5),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '#1',
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Container(
+                                              child: Text(
+                                                '${e.title}',
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ]),
+                                  )))
+                              .toList()),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    //crossAxisAlignment: CrossAxisAlignment.start,
-                    children: dummy.map((url) {
-                      int index = dummy.indexOf(url);
+                    children:
+                        Get.find<Controller>().modifiedPostItList.map((url) {
+                      int index = Get.find<Controller>()
+                          .modifiedPostItList
+                          .indexOf(url);
                       return Container(
                         width: 8.0,
                         height: 8.0,
                         margin: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 2.0),
+                            vertical: 0.0, horizontal: 2.0),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _current == index
@@ -121,67 +180,77 @@ class _MemoPageState extends State<MemoPage> {
                     }).toList(),
                   ),
                 ],
-              ),
-            )),
-        Align(
-          child: Text(
-            '    Out Line',
-            style: GoogleFonts.lato(
-              textStyle: Theme.of(context).textTheme.headline4,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          alignment: Alignment.centerLeft,
-        ),
-        Divider(),
-        Expanded(
-          child: Container(
-            //color: Colors.grey[400],
-            child: _getTodoList(),
-          ),
-          flex: 3,
-        ),
-      ],
-    );
+              )),
+          Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(),
+                  Text(
+                    '    Out Line',
+                    style: GoogleFonts.lato(
+                      textStyle: Theme.of(context).textTheme.headline4,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  Divider(),
+                  Expanded(
+                    child: Container(
+                      child: _getTodoList(),
+                    ),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    ));
   }
 
   Widget _getTodoList() {
     return ListView.separated(
         separatorBuilder: (context, index) => Divider(),
-        itemCount: todoList.length,
+        itemCount: Get.find<Controller>().getXTodoModelList.length,
         itemBuilder: (context, index) {
-          return CheckboxListTile(
-            onChanged: (value) {
-              setState(() {
-                todoList[index]['isDone'] = value;
-              });
-            },
-            dense: false,
-            activeColor: Colors.grey,
-            isThreeLine: false,
-            selected: todoList[index]['isDone'], //체크여부
-            value: todoList[index]['isDone'], //체크박스 값(표시)
-            title: !todoList[index]['isDone']
-                ? Text('${todoList[index]['content']}')
-                : Text(
-                    '${todoList[index]['content']}',
-                    style: TextStyle(decoration: TextDecoration.lineThrough),
-                  ),
-          );
+          return _makeTodoRow(index);
         });
   }
 
-  List _makingGridList() {
-    final int gridCount = 9;
-
-    List<Widget> gridGroupList = [Text('a'), Text('b')];
-
-    int listCount = postItModel.length;
-    int gridPages = (listCount / gridCount).ceil();
-    int lastPostit = listCount % gridCount;
-
-    return gridGroupList;
+  Widget _makeTodoRow(index) {
+    return Container(
+      height: 25,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            Get.find<Controller>().getXTodoModelList[index].isDone =
+                !Get.find<Controller>().getXTodoModelList[index].isDone;
+          });
+        },
+        child: Row(
+          children: [
+            Checkbox(
+              activeColor: Colors.grey[700],
+              value: Get.find<Controller>().getXTodoModelList[index].isDone,
+              onChanged: (value) {
+                setState(() {
+                  Get.find<Controller>().getXTodoModelList[index].isDone =
+                      value;
+                });
+              },
+            ),
+            !Get.find<Controller>().getXTodoModelList[index].isDone
+                ? Text(
+                    '${Get.find<Controller>().getXTodoModelList[index].content}')
+                : Text(
+                    '${Get.find<Controller>().getXTodoModelList[index].content}',
+                    style: TextStyle(decoration: TextDecoration.lineThrough),
+                  ),
+            //Text('${todoList[index]['content']}')
+          ],
+        ),
+      ),
+    );
   }
 }

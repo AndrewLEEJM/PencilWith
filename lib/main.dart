@@ -1,123 +1,101 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:get/get.dart';
-import 'package:pencilwith/pages/mainpage.dart';
+import 'package:pencilwith/pages/termspage.dart';
 import 'models/getxcontroller.dart';
 
 void main() => runApp(GetMaterialApp(
-      //theme: ThemeData(primarySwatch: Colors.red, accentColor: Colors.yellow),
+      builder: (context, child) {
+        return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: child);
+      },
       home: MyApp(),
-      //theme: ThemeData(brightness: Brightness.light),
       debugShowCheckedModeBanner: false,
     ));
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Controller c = Get.put(Controller());
-    c.width(MediaQuery.of(context).size.width);
-    return Obx(() => c.width > 0.0
-        ? Scaffold(
-            body: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(),
-                Container(
-                  color: Colors.grey[400],
-                  child: Center(
-                    child: Text(
-                      '로고',
-                      style: TextStyle(
-                          fontSize: c.width * 0.05,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  height: 200,
-                  width: 250,
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.blue[900],
-                    ),
-                    child: OutlineButton(
-                      onPressed: () {
-                        print('구글 로그인');
-                        _moveNextPage();
-                      },
-                      child: Text(
-                        '구글 로그인',
-                        style: TextStyle(
-                            fontSize: c.width * 0.06,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    width: c.width.value * 0.7,
-                    height: 60,
+    var _deviceWidth = MediaQuery.of(context).size.width.toDouble();
+    var _deviceHeight = MediaQuery.of(context).size.height.toDouble();
+    var _deviceRatio = _deviceWidth / _deviceHeight;
+
+    return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(),
+              Container(
+                color: Colors.grey[400],
+                child: Center(
+                  child: Text(
+                    '로고',
+                    style: TextStyle(
+                        fontSize: _deviceWidth * 0.05,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.yellow,
-                    ),
-                    child: OutlineButton(
-                      onPressed: () {
-                        print('카카오 로그인');
-                        _moveNextPage();
-                      },
-                      child: Text(
-                        '카카오 로그인',
-                        style: TextStyle(
-                            fontSize: c.width * 0.06,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    width: c.width.value * 0.7,
-                    height: 60,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      //color: Colors.blue[900],
-                    ),
-                    child: OutlineButton(
-                      onPressed: () {
-                        print('다른 방법으로 시작하기');
-                        _moveNextPage();
-                      },
-                      child: Text(
-                        '다른 방법으로 시작하기',
-                        style: TextStyle(
-                            fontSize: c.width * 0.045,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    width: c.width.value * 0.7,
-                    height: 60,
-                  ),
-                ),
-              ],
-            ),
-          ))
-        : Center(child: Text('Loading')));
+                width: _deviceWidth * 0.7,
+                height: _deviceWidth * _deviceRatio,
+              ),
+              SizedBox(
+                height: 100,
+              ),
+              _loginButton('구글', _deviceWidth, Colors.blue[900], Colors.white),
+              _loginButton('카카오', _deviceWidth, Colors.yellow, Colors.black),
+            ],
+          ),
+        ));
   }
 
   void _moveNextPage() {
-    Get.off(MainPage());
+    Get.off(() => TermsPage());
+  }
+
+  Widget _loginButton(
+      String vendor, double _deviceWidth, Color color, Color textColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          color: color,
+        ),
+        child: OutlineButton(
+          onPressed: () {
+            print('$vendor 로그인');
+            _moveNextPage();
+          },
+          child: Text(
+            '$vendor 로그인',
+            style: TextStyle(
+                fontSize: _deviceWidth * 0.06,
+                color: textColor,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        width: _deviceWidth * 0.7,
+        height: 60,
+      ),
+    );
   }
 }
