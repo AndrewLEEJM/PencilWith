@@ -26,8 +26,10 @@ class _TermsPageState extends State<TermsPage> {
 
   @override
   Widget build(BuildContext context) {
+    var _deviceWidth = MediaQuery.of(context).size.width.toDouble();
+
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      //resizeToAvoidBottomPadding: false,
       body: Padding(
         padding: const EdgeInsets.only(top: 20.0, left: 25, right: 20),
         child: Column(
@@ -39,12 +41,13 @@ class _TermsPageState extends State<TermsPage> {
             ),
             Text(
               '펜슬위드 약관',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  fontSize: _deviceWidth * 0.08, fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: 40,
             ),
-            _getTermContent(15.0),
+            _getTermContent(_deviceWidth * 0.05),
             Spacer(),
             Column(
               children: [
@@ -67,7 +70,7 @@ class _TermsPageState extends State<TermsPage> {
                               })),
                       Text(
                         '이용 약관 동의',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: _deviceWidth * 0.06),
                       ),
                     ],
                   ),
@@ -91,7 +94,7 @@ class _TermsPageState extends State<TermsPage> {
                               })),
                       Text(
                         '개인정보 수집 동의서',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: _deviceWidth * 0.06),
                       ),
                     ],
                   ),
