@@ -175,9 +175,12 @@ class _AccountState extends State<Account> {
             ],
           ),
           Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Title(title: '작가역량'),
               Radio(
+                  visualDensity: VisualDensity(horizontal: -1.5),
                   value: '입문',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
@@ -188,8 +191,23 @@ class _AccountState extends State<Account> {
               Text(
                 "입문",
               ),
+              Container(
+                child: Radio(
+                    visualDensity: VisualDensity(horizontal: -1.5),
+                    value: '5년이하',
+                    groupValue: this.selectedExperience,
+                    onChanged: (val) {
+                      setState(() {
+                        this.selectedExperience = val;
+                      });
+                    }),
+              ),
+              Text(
+                "5년이하",
+              ),
               Radio(
-                  value: '2~5 년차',
+                  visualDensity: VisualDensity(horizontal: -1.5),
+                  value: '5년이상',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
                     setState(() {
@@ -197,19 +215,9 @@ class _AccountState extends State<Account> {
                     });
                   }),
               Text(
-                "2~5 년차",
+                "5년이상",
               ),
-              Radio(
-                  value: '5년차 이상',
-                  groupValue: this.selectedExperience,
-                  onChanged: (val) {
-                    setState(() {
-                      this.selectedExperience = val;
-                    });
-                  }),
-              Text(
-                "5년차 이상",
-              ),
+              Spacer()
             ],
           ),
           Padding(
@@ -232,7 +240,7 @@ class _AccountState extends State<Account> {
             ),
           ),
           SizedBox(
-            height: 30,
+            height: 20,
           ),
           GestureDetector(
             onTap: () {
