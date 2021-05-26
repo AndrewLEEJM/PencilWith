@@ -22,7 +22,6 @@ class _AccountState extends State<Account> {
 
   @override
   initState() {
-    // 부모의 initState호출
     super.initState();
     // 이 클래스애 리스너 추가
     DateTime now = new DateTime.now();

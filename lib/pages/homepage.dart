@@ -12,7 +12,7 @@ import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:pencilwith/pages/subpages/feedback.dart';
 import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/newwritepage.dart';
-import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
+import 'package:pencilwith/values/commonfunction.dart';
 import 'package:top_sheet/top_sheet.dart';
 
 class HomePage extends StatefulWidget {

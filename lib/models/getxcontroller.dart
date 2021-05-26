@@ -5,14 +5,13 @@ import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/savenotes.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
-import 'package:zefyr/zefyr.dart';
 
 DBHelper dbHelper = new DBHelper();
 
 class Controller extends GetxController {
   var selectedIndex = 0.obs;
   var novelList = [].obs;
-  var zefyrController1 = Rx<ZefyrController>();
+//  var zefyrController1 = Rx<ZefyrController>();
 
   //var writePage = 1.obs;
   //var writeMaxPage = 5.obs;
@@ -64,9 +63,7 @@ class Controller extends GetxController {
   ].obs;
 
   var modifiedPostItList = [].obs;
-
   //  var selectedPageIndex = 0.obs;
-
   //var zefyrControllerGetx = null.obs;
 
   void increase() {
@@ -88,15 +85,15 @@ class Controller extends GetxController {
   }
 
   void saveInCtl() {
-    SaveNotes _newNote;
-    final content = jsonEncode(this.zefyrController1.value.document);
-    _newNote = SaveNotes(content);
-    if (_newNote.id != null) {
-      //write update logic here
-    } else {
-      dbHelper.insertNote(_newNote);
-      print('save complete');
-    }
+    // SaveNotes _newNote;
+    // final content = jsonEncode(this.zefyrController1.value.document);
+    // _newNote = SaveNotes(content);
+    // if (_newNote.id != null) {
+    //   //write update logic here
+    // } else {
+    //   dbHelper.insertNote(_newNote);
+    //   print('save complete');
+    // }
   }
 
   List makingGridList2() {

@@ -9,7 +9,7 @@ import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pencilwith/pages/subpages/suboptionpages/commonfunction.dart';
+import 'package:pencilwith/values/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
   @override
