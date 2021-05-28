@@ -67,7 +67,17 @@ class Controller extends GetxController {
   }
 
   void insertTodoModel(TodoModel model) {
+    getXTodoModelList.removeLast();
     getXTodoModelList.add(model);
+    getXTodoModelList.add(
+      TodoModel(
+          id: 'plus',
+          date: '210511',
+          title: 'title2',
+          content: 'content1',
+          isDone: 'true'),
+    );
+    //getXTodoModelList.sort((a., b) => a.compareTo(b));
   }
 
   void pageIndexMove(int index) {
