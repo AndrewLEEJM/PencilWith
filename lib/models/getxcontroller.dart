@@ -48,11 +48,17 @@ class Controller extends GetxController {
   //todo리스트 모양
   RxList<TodoModel> getXTodoModelList = [
     TodoModel(
-        id: 1,
+        id: '1',
         date: '210511',
         title: 'title2',
         content: 'content1',
-        isDone: true),
+        isDone: 'true'),
+    TodoModel(
+        id: 'plus',
+        date: '210511',
+        title: 'title2',
+        content: 'content1',
+        isDone: 'true'),
   ].obs;
 
   void insertPostModel(PostModel model) {

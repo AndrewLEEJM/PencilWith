@@ -241,6 +241,15 @@ class _MemoPageState extends State<MemoPage> {
         separatorBuilder: (context, index) => Divider(),
         itemCount: Get.find<Controller>().getXTodoModelList.length,
         itemBuilder: (context, index) {
+          if (Get.find<Controller>().getXTodoModelList[index].id == 'plus') {
+            return Container(
+              height: 25,
+              child: Icon(
+                Icons.add,
+                color: bottomNavigatorColor.withOpacity(0.7),
+              ),
+            );
+          }
           return _makeTodoRow(index);
         });
   }
@@ -251,23 +260,33 @@ class _MemoPageState extends State<MemoPage> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            Get.find<Controller>().getXTodoModelList[index].isDone =
-                !Get.find<Controller>().getXTodoModelList[index].isDone;
+            if (Get.find<Controller>().getXTodoModelList[index].isDone ==
+                'false') {
+              Get.find<Controller>().getXTodoModelList[index].isDone = 'true';
+            } else {
+              Get.find<Controller>().getXTodoModelList[index].isDone = 'false';
+            }
           });
         },
         child: Row(
           children: [
             Checkbox(
               activeColor: Colors.grey[700],
-              value: Get.find<Controller>().getXTodoModelList[index].isDone,
+              value: Get.find<Controller>()
+                          .getXTodoModelList[index]
+                          .isDone
+                          .toString() ==
+                      'true'
+                  ? true
+                  : false,
               onChanged: (value) {
                 setState(() {
                   Get.find<Controller>().getXTodoModelList[index].isDone =
-                      value;
+                      value ? 'true' : 'false';
                 });
               },
             ),
-            !Get.find<Controller>().getXTodoModelList[index].isDone
+            Get.find<Controller>().getXTodoModelList[index].isDone == 'false'
                 ? Text(
                     '${Get.find<Controller>().getXTodoModelList[index].content}')
                 : Text(
@@ -444,10 +463,10 @@ class _MemoPageState extends State<MemoPage> {
                 onPressed: () {
                   setState(() {
                     TodoModel _todoModel = TodoModel(
-                        id: 3,
+                        id: '3',
                         date: '210515',
                         title: 'insert',
-                        isDone: false,
+                        isDone: 'false',
                         content: 'content');
                     Get.find<Controller>().insertTodoModel(_todoModel);
                   });
