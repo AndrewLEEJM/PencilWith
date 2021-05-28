@@ -11,16 +11,20 @@ DBHelper dbHelper = new DBHelper();
 class Controller extends GetxController {
   var selectedIndex = 0.obs;
   var novelList = [].obs;
-//  var zefyrController1 = Rx<ZefyrController>();
-
-  //var writePage = 1.obs;
-  //var writeMaxPage = 5.obs;
 
   var textIndex = 0.obs;
   var maxTextCount = 0.obs;
 
-  var selectProject = "Project".obs;
+  //var selectProject = "Project".obs;
+
+  var selectProjectInfo = ProjectInfo('0', 'Project', 'My').obs;
+
   RxInt aa = 0.obs;
+
+  void changeClass(ProjectInfo aProject) {
+    this.selectProjectInfo(aProject);
+    update();
+  }
 
   RxList<PostModel> getXPostModelList = [
     PostModel(id: 1, date: '210511', title: 'title1', content: 'content1'),
@@ -127,5 +131,31 @@ class Controller extends GetxController {
       modifiedPostItList.add(tmpList);
     }
     //return modifiedPostItList;
+  }
+}
+
+class ProjectInfo {
+  String _projectId;
+  String _title;
+  String _group;
+
+  ProjectInfo(this._projectId, this._title, this._group);
+
+  String get group => _group;
+
+  set group(String value) {
+    _group = value;
+  }
+
+  String get title => _title;
+
+  set title(String value) {
+    _title = value;
+  }
+
+  String get projectId => _projectId;
+
+  set projectId(String value) {
+    _projectId = value;
   }
 }

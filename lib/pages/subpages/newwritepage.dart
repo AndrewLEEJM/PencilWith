@@ -37,46 +37,59 @@ class _NewWritePageState extends State<NewWritePage> {
 
   @override
   Widget build(BuildContext context) {
-    var _subPageHeight = 0.0;
+    var _subPageHeight = _keyboardState
+        ? MediaQuery.of(context).size.height -
+            MediaQuery.of(context).padding.bottom -
+            50 - //상단
+            20 - //?
+            65 - //하단
+            MediaQuery.of(context).padding.top -
+            52 -
+            255
+        : MediaQuery.of(context).size.height -
+            MediaQuery.of(context).padding.bottom -
+            50 - //상단
+            20 - //?
+            65 - //하단
+            MediaQuery.of(context).padding.top -
+            52; //추가 챕터제목칸과 divice라인포함
 
     final viewInsets = EdgeInsets.fromWindowPadding(
         WidgetsBinding.instance.window.viewInsets,
         WidgetsBinding.instance.window.devicePixelRatio);
 
-    print(viewInsets.bottom);
+    //Platform.isIOS
 
-    if (Platform.isIOS) {
-      _subPageHeight = MediaQuery.of(context).size.height * 0.76;
-    } else {
-      _subPageHeight = MediaQuery.of(context).size.height * 0.74;
-    }
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Column(
-        children: [
-          TextField(
-            maxLength: null,
-            style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.07,
-                fontWeight: FontWeight.bold),
-            maxLines: 1,
-            decoration: InputDecoration.collapsed(
-              hintText: "챕터제목",
-              hintStyle: TextStyle(
-                  color: Colors.grey.withOpacity(0.4),
-                  fontWeight: FontWeight.normal),
-              border: InputBorder.none,
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+        height: _subPageHeight,
+        child: Column(
+          children: [
+            Container(
+              height: 35,
+              child: TextField(
+                maxLength: null,
+                style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width * 0.07,
+                    fontWeight: FontWeight.bold),
+                maxLines: 1,
+                decoration: InputDecoration.collapsed(
+                  hintText: "챕터제목",
+                  hintStyle: TextStyle(
+                      color: Colors.grey.withOpacity(0.4),
+                      fontWeight: FontWeight.normal),
+                  border: InputBorder.none,
+                ),
+              ),
             ),
-          ),
-          Divider(),
-          Container(
-              height: _keyboardState
-                  ? _subPageHeight -
-                      MediaQuery.of(context).viewInsets.bottom -
-                      260
-                  : _subPageHeight,
-              child: Content()),
-        ],
+            Container(
+              child: Divider(),
+              height: 15,
+            ),
+            Expanded(child: Content()),
+          ],
+        ),
       ),
     );
   }

@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
-import 'package:pencilwith/models/dropdownmodel.dart';
+import 'package:pencilwith/models/allproject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/savenotes.dart';
@@ -14,6 +16,7 @@ import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/newwritepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
 import 'package:top_sheet/top_sheet.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -24,26 +27,21 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Controller _controller = Get.put(Controller());
   DBHelper dbHelper = DBHelper();
-  List<SaveNotes> aList;
+  List<SaveNotes> aList = [];
+  List<Map<String, dynamic>> projectList = [];
 
   final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingModalController =
+      TextEditingController();
+
   TabController _tabController;
   var selectedPageIndex = 0;
-  List<Widget> _tabs = [
-    Tab(
-      text: '메모',
-    ),
-    Tab(
-      text: '글쓰기',
-    ),
-    Tab(
-      text: '피드백',
-    ),
-  ];
 
   @override
   void initState() {
-    getData();
+    //getData();
+    //project 전체 list call
+    _callBackServer(apiNames.callAllProject);
     _tabController = new TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -51,6 +49,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
+    _textEditingController.dispose();
+    _textEditingModalController.dispose();
     super.dispose();
   }
 
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 15),
           height: 350,
           child: GroupedListView<dynamic, String>(
-            elements: novels,
+            elements: projectList,
             groupBy: (element) => element['group'],
             groupComparator: (value1, value2) => value2.compareTo(value1),
             itemComparator: (item1, item2) =>
@@ -89,8 +89,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Text(element['title']),
                 ),
                 onTap: () {
-                  Get.find<Controller>().selectProject.value =
-                      element['title'].toString();
+                  ProjectInfo clickProject = new ProjectInfo(
+                      element['projectId'].toString(),
+                      element['title'].toString(),
+                      element['group'].toString());
+                  Get.find<Controller>().changeClass(clickProject);
                   Navigator.pop(context);
                 },
               );
@@ -141,15 +144,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             },
                             child: Row(
                               children: [
-                                Obx(
-                                  () => Text(
-                                    '${Get.find<Controller>().selectProject.value.toString()}',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                                GetBuilder<Controller>(
+                                    init: Controller(),
+                                    builder: (controller) {
+                                      return Text(
+                                        '${controller.selectProjectInfo.value.title.toString()}',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      );
+                                    }),
+                                // Obx(
+                                //   () => Text(
+                                //     //TODO 이부분 변경 실시간 변경되도록
+                                //     '${Get.find<Controller>().selectProject.value.toString()}',
+                                //     style: TextStyle(
+                                //       color: Colors.black,
+                                //     ),
+                                //     overflow: TextOverflow.ellipsis,
+                                //   ),
+                                // ),
                                 Icon(
                                   Icons.keyboard_arrow_down,
                                   color: Colors.black,
@@ -164,7 +179,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 return GestureDetector(
                                   child: Icon(Icons.add),
                                   onTap: () {
-                                    getShowBottom();
+                                    createProjectDialog(context);
                                   },
                                 );
                               } else if (selectedPageIndex == 1) {
@@ -205,15 +220,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             MediaQuery.of(context).padding.top,
         child: ListView(children: [
           TabBar(
-              onTap: (index) {
-                setState(() {
-                  closedKeyboard(context);
-                  selectedPageIndex = index;
-                });
-              },
-              labelColor: Colors.black54,
-              controller: _tabController,
-              tabs: _tabs),
+            onTap: (index) {
+              setState(() {
+                closedKeyboard(context);
+                selectedPageIndex = index;
+              });
+            },
+            labelColor: Colors.black87,
+            unselectedLabelStyle: TextStyle(
+              fontSize: deviceWidth * 0.040,
+              fontWeight: FontWeight.normal,
+            ),
+            controller: _tabController,
+            tabs: tabs,
+            labelStyle: TextStyle(
+              fontSize: deviceWidth * 0.04,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           GestureDetector(
             onHorizontalDragEnd: (DragEndDetails details) {
               if (details.primaryVelocity > 0) {
@@ -443,5 +467,109 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ],
           );
         });
+  }
+
+  Future<String> createProjectDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Text('프로젝트 생성'),
+            content: TextField(
+              controller: _textEditingModalController,
+              maxLines: 1,
+              decoration: InputDecoration(
+                hintText: "프로젝트명을 입력하세요.",
+                hintStyle: TextStyle(
+                    color: Colors.grey.withOpacity(0.4),
+                    fontWeight: FontWeight.normal),
+              ),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                onPressed: () {
+                  _textEditingModalController.clear();
+                  Navigator.of(context).pop();
+                },
+                child: Text('취소'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  // Navigator.of(context)
+                  //     .pop(_textEditingModalController.text.toString());
+                  _callBackServer(apiNames.createProject);
+                  Navigator.of(context).pop();
+                },
+                child: Text('생성'),
+              )
+            ],
+          );
+        });
+  }
+
+  Future<void> _callBackServer(apiNames request) async {
+    String url;
+    String method;
+    String contextType = 'application/json ; charset=utf-8';
+    var response;
+
+    switch (request) {
+      case apiNames.callAllProject:
+        url = 'https://pencil-with.com/api/projects/my';
+        response = await http.get(
+          url,
+          headers: {
+            'Content-type': contextType,
+            'Accept': contextType,
+            'Authorization': 'Bearer $jwtToken'
+          },
+        );
+        if (response.statusCode == 200) {
+          projectList = [];
+          AllProject ap =
+              AllProject.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+          ap.crewProjects.forEach((element) {
+            projectList.add({
+              'projectId': '${element.projectId}',
+              'title': '${element.title}',
+              'group': 'Crew'
+            });
+          });
+          ap.ownerProjects.forEach((element) {
+            projectList.add({
+              'projectId': '${element.projectId}',
+              'title': '${element.title}',
+              'group': 'My'
+            });
+          });
+        } else {
+          throw Exception('프로젝트 리스트 조회 에러');
+        }
+        break;
+
+      case apiNames.createProject:
+        Map data = {"title": _textEditingModalController.text.toString()};
+        var body = json.encode(data);
+        url = 'https://pencil-with.com/api/projects';
+        response = await http.post(url,
+            headers: {
+              "Content-Type": "application/json",
+              'Authorization': 'Bearer $jwtToken'
+            },
+            body: body);
+        if (response.statusCode == 200) {
+          _callBackServer(apiNames.callAllProject);
+          _textEditingModalController.clear();
+          print('insert project complete');
+        } else {
+          print(response.statusCode);
+          throw Exception('프로젝트 생성 에러');
+        }
+        break;
+      default:
+        break;
+    }
   }
 }

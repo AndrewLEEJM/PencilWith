@@ -9,6 +9,7 @@ import 'package:kakao_flutter_sdk/user.dart';
 import 'package:pencilwith/models/newbie.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
+import 'package:pencilwith/values/commonfunction.dart';
 
 void main() => runApp(GetMaterialApp(
       builder: (context, child) {
@@ -52,9 +53,9 @@ class _MyAppState extends State<MyApp> {
 
     isKakaoTalkInstalled();
 
-    var _deviceWidth = MediaQuery.of(context).size.width.toDouble();
-    var _deviceHeight = MediaQuery.of(context).size.height.toDouble();
-    var _deviceRatio = _deviceWidth / _deviceHeight;
+    deviceWidth = MediaQuery.of(context).size.width.toDouble();
+    deviceHeight = MediaQuery.of(context).size.height.toDouble();
+    deviceRatio = deviceWidth / deviceHeight;
 
     return Scaffold(
         resizeToAvoidBottomPadding: false,
@@ -69,18 +70,18 @@ class _MyAppState extends State<MyApp> {
                   child: Text(
                     '로고',
                     style: TextStyle(
-                        fontSize: _deviceWidth * 0.05,
+                        fontSize: deviceWidth * 0.05,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
-                width: _deviceWidth * 0.7,
-                height: _deviceWidth * _deviceRatio,
+                width: deviceWidth * 0.7,
+                height: deviceWidth * deviceRatio,
               ),
               SizedBox(
                 height: 100,
               ),
-              _loginButton('구글', _deviceWidth, Colors.blue[900], Colors.white),
-              _loginButton('카카오', _deviceWidth, Colors.yellow, Colors.black),
+              _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
+              _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
             ],
           ),
         ));
@@ -191,6 +192,7 @@ class _MyAppState extends State<MyApp> {
       Newbie nb = Newbie.fromJson(jsonResponse);
       if (nb.body.registered) {
         //TODO : JWTtoken(nb.body.jwtToken)을 받아서, 진행
+
       } else {
         _moveNextPage();
       }
