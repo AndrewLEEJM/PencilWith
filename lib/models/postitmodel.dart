@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PostModel {
-  int id;
+  String id;
   String date;
   String title;
   String content;

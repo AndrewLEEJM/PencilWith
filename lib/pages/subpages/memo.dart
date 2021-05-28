@@ -4,11 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pencilwith/values/bottom_value.dart';
 import 'package:pencilwith/values/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
@@ -18,8 +20,9 @@ class MemoPage extends StatefulWidget {
 
 class _MemoPageState extends State<MemoPage> {
   int _current = 0;
-
   bool visibleCheck = false;
+
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -52,6 +55,7 @@ class _MemoPageState extends State<MemoPage> {
 
   @override
   void dispose() {
+    _textEditingController.dispose();
     super.dispose();
   }
 
@@ -113,7 +117,6 @@ class _MemoPageState extends State<MemoPage> {
                           //padding: EdgeInsets.all(0.0),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
-                            //childAspectRatio: 16 / 14,
                             childAspectRatio: 16 / 15,
                             // mainAxisSpacing: 5,
                             // crossAxisSpacing: 5,
@@ -123,7 +126,9 @@ class _MemoPageState extends State<MemoPage> {
                               .modifiedPostItList[index]
                               .map<Widget>((e) => GestureDetector(
                                   onTap: () {
-                                    print('${e.content}을 클릭했네예');
+                                    if (e.id == 'plus') {
+                                      getShowBottom();
+                                    }
                                   },
                                   child: Container(
                                     child: Stack(children: [
@@ -138,16 +143,38 @@ class _MemoPageState extends State<MemoPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '#1',
+                                              '',
                                               style: TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             Container(
-                                              child: Text(
-                                                '${e.title}',
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 3,
+                                              child: Center(
+                                                child: e.id != 'plus'
+                                                    ? Text(
+                                                        '${e.title}',
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        maxLines: 3,
+                                                      )
+                                                    : Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(3),
+                                                        //decoration:
+                                                        // BoxDecoration(
+                                                        // color:
+                                                        //     bottomNavigatorColor
+                                                        //         .withOpacity(
+                                                        //             0.7),
+                                                        // shape: BoxShape.circle),
+                                                        child: Icon(
+                                                          Icons.add,
+                                                          color:
+                                                              bottomNavigatorColor
+                                                                  .withOpacity(
+                                                                      0.7),
+                                                        )),
                                               ),
                                             ),
                                           ],
@@ -252,5 +279,184 @@ class _MemoPageState extends State<MemoPage> {
         ),
       ),
     );
+  }
+
+  getShowBottom() {
+    showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            padding: EdgeInsets.only(bottom: 25),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  child: Center(
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                        Icon(Icons.drive_file_rename_outline),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Get.back();
+                            _displayTextInputDialog(context);
+                          },
+                          child: Text(
+                            '문자노트',
+                            style: TextStyle(fontSize: 17),
+                          ),
+                        )
+                      ])),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12))),
+                  height: 50,
+                  width: double.infinity,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Get.back();
+                    showModalBottomSheet(
+                        //backgroundColor: Colors.white.withOpacity(1.0),
+                        backgroundColor: Colors.transparent,
+                        context: context,
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(00),
+                                    topRight: Radius.circular(30))),
+                            //child: Center(child: MyRCApp()),
+                            child: Center(child: Text('레코드')),
+                            height: 300,
+                          );
+                        });
+                    // setState(() {
+                    //   visibleCheck = false;
+                    // });
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    child: Center(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                          Icon(Icons.mic_none_outlined),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            '음성노트',
+                            style: TextStyle(fontSize: 17),
+                          )
+                        ])),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12))),
+                    height: 50,
+                    width: double.infinity,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      context: context,
+    );
+  }
+
+  Future<void> _displayTextInputDialog(BuildContext context) async {
+    final dateFormatter = DateFormat('yy.MM.dd');
+    var tmpMemo;
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Container(
+              width: 300,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('tempo'),
+                  Divider(),
+                  Text('작성일 :${dateFormatter.format(DateTime.now())}',
+                      style: TextStyle(fontSize: 10)),
+                  TextField(
+                    cursorColor: Colors.grey,
+                    decoration: InputDecoration(
+                        focusColor: Colors.grey,
+                        hoverColor: Colors.red,
+                        fillColor: Colors.yellowAccent),
+                    onChanged: (value) {
+                      setState(() {
+                        tmpMemo = value;
+                      });
+                    },
+                    controller: _textEditingController,
+                    maxLength: 500,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+                    //decoration: InputDecoration(hintText: 'write memo'),
+                    // decoration: InputDecoration(
+                    //     border: OutlineInputBorder(
+                    //         borderRadius: BorderRadius.circular(20)))
+                  ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                color: Colors.grey,
+                textColor: Colors.white,
+                child: Text('MEMO'),
+                onPressed: () {
+                  setState(() {
+                    PostModel _postModel = PostModel(
+                        id: '3',
+                        date: '210515',
+                        title: 'insert',
+                        content: 'content');
+                    Get.find<Controller>().insertPostModel(_postModel);
+                  });
+                  _textEditingController.clear();
+                  Get.back();
+                },
+              ),
+              FlatButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                color: Colors.grey,
+                textColor: Colors.white,
+                child: Text('TODO'),
+                onPressed: () {
+                  setState(() {
+                    TodoModel _todoModel = TodoModel(
+                        id: 3,
+                        date: '210515',
+                        title: 'insert',
+                        isDone: false,
+                        content: 'content');
+                    Get.find<Controller>().insertTodoModel(_todoModel);
+                  });
+                  _textEditingController.clear();
+                  Get.back();
+                },
+              ),
+            ],
+          );
+        });
   }
 }

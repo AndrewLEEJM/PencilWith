@@ -1,14 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get/get_navigation/src/snackbar/snack.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/allproject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
+import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
+import 'package:pencilwith/models/projectclass.dart';
 import 'package:pencilwith/models/savenotes.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:pencilwith/pages/subpages/feedback.dart';
@@ -27,10 +29,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Controller _controller = Get.put(Controller());
   DBHelper dbHelper = DBHelper();
-  List<SaveNotes> aList = [];
+  //나중에 정리
+  // List<SaveNotes> aList = [];
+
+  List<NoteObject> allNoteList = [];
+
   List<Map<String, dynamic>> projectList = [];
 
-  final TextEditingController _textEditingController = TextEditingController();
   final TextEditingController _textEditingModalController =
       TextEditingController();
 
@@ -39,7 +44,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    //getData();
     //project 전체 list call
     _callBackServer(apiNames.callAllProject);
     _tabController = new TabController(length: 3, vsync: this);
@@ -49,14 +53,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _tabController.dispose();
-    _textEditingController.dispose();
     _textEditingModalController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _createBody(aList, context);
+    return _createBody(context);
   }
 
   _onAlertWithCustomContentPressed(context) {
@@ -89,12 +92,23 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Text(element['title']),
                 ),
                 onTap: () {
-                  ProjectInfo clickProject = new ProjectInfo(
-                      element['projectId'].toString(),
-                      element['title'].toString(),
-                      element['group'].toString());
-                  Get.find<Controller>().changeClass(clickProject);
+                  _callBackServer(apiNames.callEachProject,
+                      index: '${element['projectId'].toString()}');
                   Navigator.pop(context);
+                },
+                onLongPress: () {
+                  if (element['projectId'].toString() ==
+                      Get.find<Controller>()
+                          .currentProject
+                          .value
+                          .projectId
+                          .toString()) {
+                    Get.snackbar('프로젝트삭제 안내', '작업중인 프로젝트는 삭제하실 수 없습니다.',
+                        snackPosition: SnackPosition.TOP);
+                  } else {
+                    Navigator.pop(context);
+                    deleteProjectDialog(context, element);
+                  }
                 },
               );
             },
@@ -105,24 +119,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  getData() {
-    final dbFuture = dbHelper.initDatabase();
-    dbFuture.then((result) {
-      final noteList = dbHelper.getNotes(); //전체노트 list를 생성
-      noteList.then((result) {
-        List<SaveNotes> tempList = List<SaveNotes>();
-        int count = result.length;
-        for (int i = 0; i < count; i++) {
-          tempList.add(SaveNotes.fromObject(result[i]));
-        }
-        setState(() {
-          aList = tempList;
+  //call notes
+  _callDatabase(String index) {
+    final db = dbHelper.initDatabase();
+    db.then((value) {
+      final _noteList = dbHelper.getNotes(index);
+      _noteList.then((note) {
+        note.forEach((e) {
+          allNoteList.add(NoteObject.fromJson(e));
         });
       });
     });
   }
 
-  _createBody(List<SaveNotes> aList, BuildContext context) {
+  _createBody(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(50),
@@ -147,12 +157,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 GetBuilder<Controller>(
                                     init: Controller(),
                                     builder: (controller) {
-                                      return Text(
-                                        '${controller.selectProjectInfo.value.title.toString()}',
-                                        style: TextStyle(
-                                          color: Colors.black,
+                                      return ConstrainedBox(
+                                        child: Text(
+                                          '${controller.currentProject.value?.title ?? 'Project'}',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
+                                        constraints: BoxConstraints(
+                                            maxWidth: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.7),
                                       );
                                     }),
                                 // Obx(
@@ -196,7 +213,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                     child: Text('테스트'),
                                     onTap: () {
                                       print('save');
-                                      getShowBottom();
+                                      //getShowBottom();
                                     });
                               } else {
                                 return null;
@@ -290,180 +307,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  getShowBottom() {
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return SafeArea(
-          child: Container(
-            padding: EdgeInsets.only(bottom: 25),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  child: Center(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                        Icon(Icons.drive_file_rename_outline),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.back();
-                            _displayTextInputDialog(context);
-                          },
-                          child: Text(
-                            '문자노트',
-                            style: TextStyle(fontSize: 17),
-                          ),
-                        )
-                      ])),
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12))),
-                  height: 50,
-                  width: double.infinity,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.back();
-                    showModalBottomSheet(
-                        //backgroundColor: Colors.white.withOpacity(1.0),
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(00),
-                                    topRight: Radius.circular(30))),
-                            //child: Center(child: MyRCApp()),
-                            child: Center(child: Text('레코드')),
-                            height: 300,
-                          );
-                        });
-                    // setState(() {
-                    //   visibleCheck = false;
-                    // });
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Center(
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                          Icon(Icons.mic_none_outlined),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            '음성노트',
-                            style: TextStyle(fontSize: 17),
-                          )
-                        ])),
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(12),
-                            bottomRight: Radius.circular(12))),
-                    height: 50,
-                    width: double.infinity,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      context: context,
-    );
-  }
-
-  Future<void> _displayTextInputDialog(BuildContext context) async {
-    final dateFormatter = DateFormat('yy.MM.dd');
-    var tmpMemo;
+  Future<String> deleteProjectDialog(
+      BuildContext context, Map<String, dynamic> listProject) {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Container(
-              width: 300,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('tempo'),
-                  Divider(),
-                  Text('작성일 :${dateFormatter.format(DateTime.now())}',
-                      style: TextStyle(fontSize: 10)),
-                  TextField(
-                    cursorColor: Colors.grey,
-                    decoration: InputDecoration(
-                        focusColor: Colors.grey,
-                        hoverColor: Colors.red,
-                        fillColor: Colors.yellowAccent),
-                    onChanged: (value) {
-                      setState(() {
-                        tmpMemo = value;
-                      });
-                    },
-                    controller: _textEditingController,
-                    maxLength: 500,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    //decoration: InputDecoration(hintText: 'write memo'),
-                    // decoration: InputDecoration(
-                    //     border: OutlineInputBorder(
-                    //         borderRadius: BorderRadius.circular(20)))
-                  ),
-                ],
-              ),
-            ),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Text('해당 프로젝트를 삭제하시겠습니까?'),
+            content: Text('프로젝트번호 : ${listProject['projectId']}\n'
+                '프로젝트명 : ${listProject['title']}'),
             actions: <Widget>[
-              FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                color: Colors.grey,
-                textColor: Colors.white,
-                child: Text('MEMO'),
+              MaterialButton(
                 onPressed: () {
-                  setState(() {
-                    PostModel _postModel = PostModel(
-                        id: 3,
-                        date: '210515',
-                        title: 'insert',
-                        content: 'content');
-                    Get.find<Controller>().insertPostModel(_postModel);
-                  });
-                  _textEditingController.clear();
-                  Get.back();
+                  Navigator.of(context).pop();
                 },
+                child: Text('취소'),
               ),
-              FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                color: Colors.grey,
-                textColor: Colors.white,
-                child: Text('TODO'),
+              MaterialButton(
                 onPressed: () {
-                  setState(() {
-                    TodoModel _todoModel = TodoModel(
-                        id: 3,
-                        date: '210515',
-                        title: 'insert',
-                        isDone: false,
-                        content: 'content');
-                    Get.find<Controller>().insertTodoModel(_todoModel);
-                  });
-                  _textEditingController.clear();
-                  Get.back();
+                  _callBackServer(apiNames.deleteProject,
+                      index: listProject['projectId']);
+                  Navigator.of(context).pop();
                 },
-              ),
+                child: Text('삭제', style: TextStyle(color: Colors.red)),
+              )
             ],
           );
         });
@@ -480,6 +349,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             content: TextField(
               controller: _textEditingModalController,
               maxLines: 1,
+              maxLength: 30,
               decoration: InputDecoration(
                 hintText: "프로젝트명을 입력하세요.",
                 hintStyle: TextStyle(
@@ -509,7 +379,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         });
   }
 
-  Future<void> _callBackServer(apiNames request) async {
+  Future<void> _callBackServer(apiNames request, {String index}) async {
     String url;
     String method;
     String contextType = 'application/json ; charset=utf-8';
@@ -545,7 +415,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             });
           });
         } else {
-          throw Exception('프로젝트 리스트 조회 에러');
+          throw Exception('프로젝트 전체 리스트 조회 에러');
+        }
+        break;
+
+      case apiNames.callEachProject:
+        url = 'https://pencil-with.com/api/projects/$index';
+        response = await http.get(
+          url,
+          headers: {
+            'Content-type': contextType,
+            'Accept': contextType,
+            'Authorization': 'Bearer $jwtToken'
+          },
+        );
+        if (response.statusCode == 200) {
+          ProjectBaby newProject = ProjectBaby.fromJson(
+              json.decode(utf8.decode(response.bodyBytes)));
+          Get.find<Controller>().changeProject(newProject);
+          _callDatabase(index);
+        } else {
+          throw Exception('프로젝트 개별 리스트 조회 에러');
+        }
+        break;
+
+      case apiNames.deleteProject:
+        url = 'https://pencil-with.com/api/projects/$index';
+        response = await http.delete(
+          url,
+          headers: {
+            'Content-type': contextType,
+            'Authorization': 'Bearer $jwtToken'
+          },
+        );
+        if (response.statusCode == 200) {
+          Get.snackbar('삭제완료 안내', '삭제가 완료되었습니다.',
+              snackPosition: SnackPosition.TOP);
+          _callBackServer(apiNames.callAllProject);
+        } else {
+          throw Exception('프로젝트 삭제 에러');
         }
         break;
 
@@ -560,6 +468,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
             body: body);
         if (response.statusCode == 200) {
+          //현재 프로젝트 변경
+          ProjectBaby newProject = ProjectBaby.fromJson(
+              json.decode(utf8.decode(response.bodyBytes)));
+          Get.find<Controller>().changeProject(newProject);
+          //조회리스트 변경해주는 부분
           _callBackServer(apiNames.callAllProject);
           _textEditingModalController.clear();
           print('insert project complete');

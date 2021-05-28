@@ -23,4 +23,4 @@ List<Widget> tabs = [
   ),
 ];
 
-enum apiNames { callAllProject, createProject }
+enum apiNames { callAllProject, createProject, callEachProject, deleteProject }
