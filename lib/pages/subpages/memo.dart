@@ -127,7 +127,7 @@ class _MemoPageState extends State<MemoPage> {
                               .map<Widget>((e) => GestureDetector(
                                   onTap: () {
                                     if (e.id == 'plus') {
-                                      getShowBottom();
+                                      getShowBottom('POSTIT');
                                     }
                                   },
                                   child: Container(
@@ -242,11 +242,16 @@ class _MemoPageState extends State<MemoPage> {
         itemCount: Get.find<Controller>().getXTodoModelList.length,
         itemBuilder: (context, index) {
           if (Get.find<Controller>().getXTodoModelList[index].id == 'plus') {
-            return Container(
-              height: 25,
-              child: Icon(
-                Icons.add,
-                color: bottomNavigatorColor.withOpacity(0.7),
+            return GestureDetector(
+              onTap: () {
+                getShowBottom('TODO');
+              },
+              child: Container(
+                height: 25,
+                child: Icon(
+                  Icons.add,
+                  color: bottomNavigatorColor.withOpacity(0.7),
+                ),
               ),
             );
           }
@@ -300,7 +305,7 @@ class _MemoPageState extends State<MemoPage> {
     );
   }
 
-  getShowBottom() {
+  getShowBottom(String index) {
     showModalBottomSheet(
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -322,7 +327,7 @@ class _MemoPageState extends State<MemoPage> {
                         GestureDetector(
                           onTap: () {
                             Get.back();
-                            _displayTextInputDialog(context);
+                            _displayTextInputDialog(context, index);
                           },
                           child: Text(
                             '문자노트',
@@ -395,7 +400,8 @@ class _MemoPageState extends State<MemoPage> {
     );
   }
 
-  Future<void> _displayTextInputDialog(BuildContext context) async {
+  Future<void> _displayTextInputDialog(
+      BuildContext context, String index) async {
     final dateFormatter = DateFormat('yy.MM.dd');
     var tmpMemo;
     return showDialog(
@@ -434,45 +440,53 @@ class _MemoPageState extends State<MemoPage> {
                 ],
               ),
             ),
+
+            /// this actions button merge !!!!
             actions: <Widget>[
-              FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                color: Colors.grey,
-                textColor: Colors.white,
-                child: Text('MEMO'),
-                onPressed: () {
-                  setState(() {
-                    PostModel _postModel = PostModel(
-                        id: '3',
-                        date: '210515',
-                        title: 'insert',
-                        content: 'content');
-                    Get.find<Controller>().insertPostModel(_postModel);
-                  });
-                  _textEditingController.clear();
-                  Get.back();
-                },
+              Visibility(
+                visible: index == 'POSTIT' ? true : false,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  color: Colors.grey,
+                  textColor: Colors.white,
+                  child: Text('MEMO'),
+                  onPressed: () {
+                    setState(() {
+                      PostModel _postModel = PostModel(
+                          id: '3',
+                          date: '210515',
+                          title: 'insert',
+                          content: 'content');
+                      Get.find<Controller>().insertPostModel(_postModel);
+                    });
+                    _textEditingController.clear();
+                    Get.back();
+                  },
+                ),
               ),
-              FlatButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                color: Colors.grey,
-                textColor: Colors.white,
-                child: Text('TODO'),
-                onPressed: () {
-                  setState(() {
-                    TodoModel _todoModel = TodoModel(
-                        id: '3',
-                        date: '210515',
-                        title: 'insert',
-                        isDone: 'false',
-                        content: 'content');
-                    Get.find<Controller>().insertTodoModel(_todoModel);
-                  });
-                  _textEditingController.clear();
-                  Get.back();
-                },
+              Visibility(
+                visible: index == 'TODO' ? true : false,
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  color: Colors.grey,
+                  textColor: Colors.white,
+                  child: Text('TODO'),
+                  onPressed: () {
+                    setState(() {
+                      TodoModel _todoModel = TodoModel(
+                          id: '3',
+                          date: '210515',
+                          title: 'insert',
+                          isDone: 'false',
+                          content: 'content');
+                      Get.find<Controller>().insertTodoModel(_todoModel);
+                    });
+                    _textEditingController.clear();
+                    Get.back();
+                  },
+                ),
               ),
             ],
           );
