@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pencilwith/pages/mainpage.dart';
+import 'package:http/http.dart' as http;
+import 'package:pencilwith/values/commonfunction.dart';
+import 'dart:convert';
 
 class Account extends StatefulWidget {
   @override
@@ -10,7 +13,7 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
-  String radioValue = 'MAN';
+  String selectedGender = 'MAN';
   String selectedYear;
   String selectedMonth;
   String selectedDay;
@@ -74,22 +77,22 @@ class _AccountState extends State<Account> {
                 width: 20,
               ),
               Radio(
-                  value: 'MAN',
-                  groupValue: this.radioValue,
+                  value: 'MALE',
+                  groupValue: this.selectedGender,
                   onChanged: (val) {
                     setState(() {
-                      this.radioValue = val;
+                      this.selectedGender = val;
                     });
                   }),
               Text(
                 "남자",
               ),
               Radio(
-                  value: 'WOMEN',
-                  groupValue: this.radioValue,
+                  value: 'FEMALE',
+                  groupValue: this.selectedGender,
                   onChanged: (val) {
                     setState(() {
-                      this.radioValue = val;
+                      this.selectedGender = val;
                     });
                   }),
               Text(
@@ -180,7 +183,7 @@ class _AccountState extends State<Account> {
               Title(title: '작가역량'),
               Radio(
                   visualDensity: VisualDensity(horizontal: -1.5),
-                  value: '입문',
+                  value: 'NEWBIE',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
                     setState(() {
@@ -243,16 +246,23 @@ class _AccountState extends State<Account> {
           ),
           GestureDetector(
             onTap: () {
-              /* if (this.selectedYear != null &&
+              if (this.selectedYear != null &&
                   this.selectedExperience != null &&
                   this.selectedDay != null &&
                   this.selectedLocation != null &&
                   this.selectedMonth != null) {
-                Get.off(MainPage());
+                _registerUser({
+                  'birth':
+                      '${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}',
+                  'careerType': this.selectedExperience,
+                  'genderType': this.selectedGender,
+                  'introduction': '',
+                  'locationType': this.selectedLocation,
+                  'username': 'pencil'
+                });
               } else {
                 print('no enough value');
-              } */
-              Get.off(MainPage());
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -299,3 +309,39 @@ Widget imageSection = Container(
     ),
   ),
 );
+
+Future<void> _registerUser(body) async {
+  print(jwtToken);
+  var url = 'https://pencil-with.com/api/auth/sign-up';
+  var data = json.encode({
+    'accessToken': 'Bearer $jwtToken'.toString(),
+    'birth': '1999-02-08',
+    'careerType': 'NEWBIE',
+    'genderType': 'MEAL',
+    'introduction': '',
+    'id': 'pencil',
+    'password': '1234',
+    'locationType': 'SEOUL',
+    'username': 'pencil'
+  });
+  try {
+    var response = await http.post(url,
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': 'Bearer $jwtToken'
+        },
+        body: data);
+
+    if (response.statusCode == 200) {
+      _moveNextPage();
+    } else {
+      print('이건 서버문제야 확실해');
+    }
+  } catch (e) {
+    print(e);
+  }
+}
+
+void _moveNextPage() {
+  Get.off(() => MainPage());
+}
