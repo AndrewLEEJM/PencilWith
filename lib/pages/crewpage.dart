@@ -1,42 +1,180 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 
-class fcontent extends StatelessWidget {
-  String text;
+//성별 필터
+class ftGender extends StatefulWidget {
+  const ftGender({Key key}) : super(key: key);
 
-  fcontent(this.text);
+  @override
+  _ftGenderState createState() => _ftGenderState();
+}
+
+class _ftGenderState extends State<ftGender> {
+  var _selectedValue;
+  final _valueList = {'남성', '여성'};
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 66.07,
       height: 30,
+      margin: EdgeInsets.only(top: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(5)),
         color: Color(0xffE3E3E3),
       ),
-      child: Text(this.text,
-        style: TextStyle(
-          fontSize: 12,
-          //fontFamily: ,
-        ),
+      child: DropdownButton(
+        hint: Text('성별'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
       ),
     );
   }
 }
 
+//나이 필터
+class ftAge extends StatefulWidget {
+  const ftAge({Key key}) : super(key: key);
+
+  @override
+  _ftAgeState createState() => _ftAgeState();
+}
+
+class _ftAgeState extends State<ftAge> {
+  var _selectedValue;
+  final _valueList = {'10대', '20대', '30대', '40대', '50대', '60대'};
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 66.07,
+      height: 30,
+      margin: EdgeInsets.only(top: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
+      ),
+      child: DropdownButton(
+        hint: Text('나이'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
+      ),
+    );
+  }
+}
+
+//작가 필터
+class ftAuthor extends StatefulWidget {
+  const ftAuthor({Key key}) : super(key: key);
+
+  @override
+  _ftAuthorState createState() => _ftAuthorState();
+}
+
+class _ftAuthorState extends State<ftAuthor> {
+  var _selectedValue;
+  final _valueList = {'10대', '20대', '30대', '40대', '50대', '60대'};
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 66.07,
+      height: 30,
+      margin: EdgeInsets.only(top: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
+      ),
+      child: DropdownButton(
+        hint: Text('작가'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
+      ),
+    );
+  }
+}
+
+class ftCareer extends StatefulWidget {
+  const ftCareer({Key key}) : super(key: key);
+
+  @override
+  _ftCareerState createState() => _ftCareerState();
+}
+
+class _ftCareerState extends State<ftCareer> {
+  var _selectedValue;
+  final _valueList = {'초보자', '중급자', '숙련자'};
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 66.07,
+      height: 30,
+      margin: EdgeInsets.only(top: 8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
+      ),
+      child: DropdownButton(
+        hint: Text('경력'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
+      ),
+    );
+  }
+}
+
+//메인
 class CrewPage extends StatefulWidget {
   @override
   _CrewPageState createState() => _CrewPageState();
 }
 
 class _CrewPageState extends State<CrewPage> {
-
-  void filtering() {
-    // ???
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,49 +193,51 @@ class _CrewPageState extends State<CrewPage> {
         body: Column(
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                Container(
-                  width: 30,
-                  height: 30,
-                  child: OutlinedButton.icon(
-                    icon: Icon(Icons.wysiwyg),
-                    onPressed: () {
-                      filtering();
-                    },
-                    style: OutlinedButton.styleFrom(
-                      shape: BeveledRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),
-                    ),
-                  ),
-                ),
-                fcontent('성별'),
-                fcontent('나이'),
-                fcontent('작가'),
-                fcontent('경력'),
+                ftGender(),
+                ftAge(),
+                ftAuthor(),
+                ftCareer(),
               ],
             ),
-
             Container(
-            width: 318,
-            height: 155,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.grey[300],
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              height: 1.0,
+              width: 500,
+              color: Color(0xffE5E5E5),
+              margin: EdgeInsets.only(top: 8),
+            ),
+            if(/*no data*/)
+              Container(
+
+              )
+            else if(/*data*/)
+            Container(
+              width: 318,
+              height: 210,
+              margin: EdgeInsets.only(top: 25),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                  color: Color(0xffE3E3E3),
                 ),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                        '크루를 모집 중인 작가분이 현재 없습니다!\n\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              ),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.fromLTRB(24, 20, 40, 0),
+                    child: Text(
+                      '크루를 모집 중인 작가분이 현재 없습니다ㅠㅠ\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
                         //fontFamily: ,
                       ),
                     ),
-                    rectBtn,
+                  ),
+                  rectBtn,
                 ],
               ),
             ),
@@ -107,7 +247,6 @@ class _CrewPageState extends State<CrewPage> {
   }
 }
 
-
 //크루 모집 버튼
 var rectBtn= ElevatedButton(
   child: Text(
@@ -115,21 +254,20 @@ var rectBtn= ElevatedButton(
     textAlign: TextAlign.center,
   ),
   style: ElevatedButton.styleFrom(
+    minimumSize: Size(266.0,43.0),
     primary: Color(0xffF0A8AB),
     textStyle: TextStyle(
       color: Colors.white,
       fontSize: 14,
-      fontStyle: FontStyle.italic,
       fontWeight: FontWeight.w400,
       //fontFamily: ,
     ),
-    shape: BeveledRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))
   ),
   onPressed: () {
     rectInfo();
   },
 );
-
 
 //크루 모집 공고 박스
 class rectInfo extends StatefulWidget {
