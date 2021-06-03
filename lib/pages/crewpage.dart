@@ -127,6 +127,7 @@ class _ftAuthorState extends State<ftAuthor> {
   }
 }
 
+//경력 필터
 class ftCareer extends StatefulWidget {
   const ftCareer({Key key}) : super(key: key);
 
@@ -175,6 +176,7 @@ class CrewPage extends StatefulWidget {
 }
 
 class _CrewPageState extends State<CrewPage> {
+  bool testing =true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,45 +209,52 @@ class _CrewPageState extends State<CrewPage> {
               color: Color(0xffE5E5E5),
               margin: EdgeInsets.only(top: 8),
             ),
-            if(/*no data*/)
-              Container(
-
-              )
-            else if(/*data*/)
-            Container(
-              width: 318,
-              height: 210,
-              margin: EdgeInsets.only(top: 25),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  color: Color(0xffE3E3E3),
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.fromLTRB(24, 20, 40, 0),
-                    child: Text(
-                      '크루를 모집 중인 작가분이 현재 없습니다ㅠㅠ\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        //fontFamily: ,
-                      ),
-                    ),
-                  ),
-                  rectBtn,
-                ],
-              ),
-            ),
+            if(testing == false)...{noOne()}
+            else...{rectInfo()},
           ],
         ),
     );
   }
 }
+
+//공고가 없을 경우 출력
+class noOne extends StatelessWidget {
+  const noOne({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 318,
+      height: 210,
+      margin: EdgeInsets.only(top: 25),
+      decoration: BoxDecoration(
+        border: Border.all(
+          width: 1,
+          color: Color(0xffE3E3E3),
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+      ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(24, 20, 40, 0),
+            child: Text(
+              '크루를 모집 중인 작가분이 현재 없습니다ㅠㅠ\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+                //fontFamily: ,
+              ),
+            ),
+          ),
+          rectBtn,
+        ],
+      ),
+    );
+  }
+}
+
 
 //크루 모집 버튼
 var rectBtn= ElevatedButton(
@@ -265,9 +274,10 @@ var rectBtn= ElevatedButton(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))
   ),
   onPressed: () {
-    rectInfo();
+    recruitment();
   },
 );
+
 
 //크루 모집 공고 박스
 class rectInfo extends StatefulWidget {
@@ -281,49 +291,145 @@ class _rectInfoState extends State<rectInfo> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 325,
+      height: 152,
+      margin: EdgeInsets.only(top: 25),
+      decoration: BoxDecoration(
+          border: Border.all(
+            width: 1,
+            color: Color(0xffE3E3E3),
+          ),
+          borderRadius: BorderRadius.all(Radius.circular(5))
+      ),
       child: Column(
         children: <Widget>[
           Row(
             children: <Widget>[
-              //아이콘 추가
+              Container(
+                  margin: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 1,
+                      color: Colors.black
+                    ),
+                    borderRadius: BorderRadius.circular(30)
+                  ),
+                  child: Text('icon'),
+              ),
               Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('제목'),
-                  Text('닉네임'),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(14, 12, 0, 0),
+                      child: Text('제목',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),)),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(14, 0, 0, 0),
+                      child: Text('닉네임',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: Color(0xffA1A1A1),
+                      ),)),
                 ],
               ),
-              TextButton(
-                onPressed: () {
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 11.56, 15, 0),
+                child: TextButton(
+                  onPressed: () {
 
-                },
-                child: Text('신고'),
+                  },
+                  child: Text('신고',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 10,
+                    color: Colors.black,
+                  ),),
+                ),
               ),
             ],
           ),
           Row(
             children: <Widget>[
-              Text('모집인원'),
-              Text('00명'),
+              Container(
+                margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
+                child: Icon(
+                  Icons.person_outline,
+                  color: Color(0xff717171),
+                  size: 17,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
+                child: Text('모집인원',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xff717171),
+                      ),
+                ),
+              ),
+              Text('00명',
+                style: TextStyle(
+                fontSize: 12,
+                ),
+              ),
             ],
           ),
           Row(
             children: <Widget>[
-              Text('집필기간'),
-              Text('~~~~'),
+              Container(
+                margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
+                child: Icon(
+                  Icons.access_time,
+                  color: Color(0xff717171),
+                  size: 17,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
+                child: Text('집필기간',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff717171),
+                  ),),
+              ),
+              Text('~~~~',
+                style: TextStyle(
+                  fontSize: 12,
+                ),),
             ],
           ),
           Row(
             children: <Widget>[
-              Text('장르'),
-              Text('0000'),
+              Container(
+                margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
+                child: Icon(
+                  Icons.import_contacts,
+                  color: Color(0xff717171),
+                  size: 17,
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
+                child: Text('장       르',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff717171),
+                  ),),
+              ),
+              Text('0000',
+                style: TextStyle(
+                  fontSize: 12,
+                ),),
             ],
           ),
         ],
-      ),
-      width: 325,
-      height: 152,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(5))
       ),
     );
   }
@@ -352,15 +458,127 @@ class _recruitmentState extends State<recruitment> {
       ),
       body: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              TextField(
-                decoration: InputDecoration(
-                  labelText: '제목'
-                ),
+          TextField(
+            decoration: InputDecoration(
+              hintText: '제목',
+              hintStyle: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
               ),
-            ],
-          )
+            ),
+          ),
+          Container(
+            width: 327,
+            height: 94,
+            margin: EdgeInsets.only(top: 16),
+            decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                  color: Color(0xffE3E3E3),
+                ),
+                borderRadius: BorderRadius.all(Radius.circular(5))
+            ),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(11, 14.5, 0, 0),
+                      child: Icon(
+                        Icons.person_outline,
+                        color: Color(0xff717171),
+                        size: 17,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(4, 8, 60, 0),
+                      child: Text('모집인원',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff717171),
+                        ),
+                      ),
+                    ),
+                    TextField(
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text('명'),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
+                      child: Icon(
+                        Icons.access_time,
+                        color: Color(0xff717171),
+                        size: 17,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
+                      child: Text('집필기간',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff717171),
+                        ),),
+                    ),
+                    TextField(
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
+                      child: Icon(
+                        Icons.import_contacts,
+                        color: Color(0xff717171),
+                        size: 17,
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
+                      child: Text('장       르',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff717171),
+                        ),),
+                    ),
+                    TextField(
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: '간단한 줄거리와 소개 등을 작성하고 모집글을 작성해보세요!',
+                    hintStyle: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
