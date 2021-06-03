@@ -1,13 +1,11 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
-import 'package:pencilwith/DBHelper/dbhelper.dart';
+import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/projectclass.dart';
 //import 'package:pencilwith/models/savenotes.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
-
-DBHelper dbHelper = new DBHelper();
 
 class Controller extends GetxController {
   //tab page index
@@ -31,54 +29,55 @@ class Controller extends GetxController {
     update();
   }
 
-  //포스트잇 모양
-  RxList<PostModel> getXPostModelList = [
-    PostModel(
-        id: '1',
-        date: '210511',
-        title: 'titl12312321321312312321sadfasfasfsfsadse1',
-        content: 'content1'),
-    PostModel(id: '1', date: '210511', title: 'title1', content: 'content1'),
-    PostModel(id: '1', date: '210511', title: 'title1', content: 'content1'),
-    PostModel(id: '1', date: '210511', title: 'title1', content: 'content1'),
-  ].obs;
+  RxList allNoteList = [].obs;
 
+  void splitList() {
+    getXPostModelList([]);
+    getXTodoModelList([
+      NoteObject(
+          id: 'plus',
+          div: 'TODO',
+          title: 'plus',
+          content: 'plus',
+          date: '19991212',
+          done: 'false'),
+    ]);
+    allNoteList.forEach((element) {
+      if (element.div == 'POST') {
+        getXPostModelList.add(element);
+      } else {
+        getXTodoModelList.removeLast();
+        getXTodoModelList.add(element);
+        getXTodoModelList.add(
+          NoteObject(
+              id: 'plus',
+              div: 'TODO',
+              title: 'plus',
+              content: 'plus',
+              date: '19991212',
+              done: 'false'),
+        );
+      }
+    });
+    makingGridList2();
+    update();
+  }
+
+  void noteListClear() {
+    allNoteList.clear();
+  }
+
+  void insertAllNoteList(NoteObject no) {
+    allNoteList.add(no);
+    update();
+  }
+
+  //포스트잇 모양
+  RxList getXPostModelList = [].obs;
   var modifiedPostItList = [].obs;
 
-  //todo리스트 모양
-  RxList<TodoModel> getXTodoModelList = [
-    TodoModel(
-        id: '1',
-        date: '210511',
-        title: 'title2',
-        content: 'content1',
-        isDone: 'true'),
-    TodoModel(
-        id: 'plus',
-        date: '210511',
-        title: 'title2',
-        content: 'content1',
-        isDone: 'true'),
-  ].obs;
-
-  void insertPostModel(PostModel model) {
-    getXPostModelList.add(model);
-    makingGridList2();
-  }
-
-  void insertTodoModel(TodoModel model) {
-    getXTodoModelList.removeLast();
-    getXTodoModelList.add(model);
-    getXTodoModelList.add(
-      TodoModel(
-          id: 'plus',
-          date: '210511',
-          title: 'title2',
-          content: 'content1',
-          isDone: 'true'),
-    );
-    //getXTodoModelList.sort((a., b) => a.compareTo(b));
-  }
+  //투두리스트 모양
+  RxList getXTodoModelList = [].obs;
 
   void pageIndexMove(int index) {
     selectedIndex.value = index;
@@ -104,7 +103,8 @@ class Controller extends GetxController {
 
     int pageCount =
         //   (Get.find<Controller>().getXPostModelList.length / maxGridCount).ceil();
-        ((Get.find<Controller>().getXPostModelList.length + 1) / maxGridCount)
+        (((Get.find<Controller>().getXPostModelList.length ?? 0) + 1) /
+                maxGridCount)
             .ceil();
 
     int index = 0;

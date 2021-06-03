@@ -28,11 +28,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Controller _controller = Get.put(Controller());
-  DBHelper dbHelper = DBHelper();
+
+  DBHelper dbHelper;
+  var db;
+
   //나중에 정리
   // List<SaveNotes> aList = [];
-
-  List<NoteObject> allNoteList = [];
+  // List<NoteObject> allNoteList = [];
 
   List<Map<String, dynamic>> projectList = [];
 
@@ -45,6 +47,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     //project 전체 list call
+    dbHelper = DBHelper();
+    db = dbHelper.initDatabase();
     _callBackServer(apiNames.callAllProject);
     _tabController = new TabController(length: 3, vsync: this);
     super.initState();
@@ -119,15 +123,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  //call notes
-  _callDatabase(String index) {
-    final db = dbHelper.initDatabase();
-    db.then((value) {
-      final _noteList = dbHelper.getNotes(index);
+  // 해당 프로젝트에 관련된 모든 노트 조회
+  _callDatabaseNoteList(String projectId) {
+    Get.find<Controller>().noteListClear();
+    db.then((database) {
+      final _noteList = dbHelper.getNotes(projectId);
       _noteList.then((note) {
         note.forEach((e) {
-          allNoteList.add(NoteObject.fromJson(e));
+          Get.find<Controller>().insertAllNoteList(NoteObject.fromJson(e));
+          print(
+              'Get.find<Controller>().allNoteList.length:${Get.find<Controller>().allNoteList.length}');
+          print('note : ${note.toString()}');
         });
+        Get.find<Controller>().splitList();
+        //Get.find<Controller>().makingGridList2();
       });
     });
   }
@@ -201,7 +210,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 );
                               } else if (selectedPageIndex == 1) {
                                 return GestureDetector(
-                                    child: Text('DB저장'),
+                                    child: Text('배포'),
                                     onTap: () {
                                       print('save');
                                       Get.find<Controller>().saveInCtl();
@@ -433,7 +442,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ProjectBaby newProject = ProjectBaby.fromJson(
               json.decode(utf8.decode(response.bodyBytes)));
           Get.find<Controller>().changeProject(newProject);
-          _callDatabase(index);
+          await _callDatabaseNoteList(index);
         } else {
           throw Exception('프로젝트 개별 리스트 조회 에러');
         }

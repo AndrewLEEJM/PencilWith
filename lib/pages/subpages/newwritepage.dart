@@ -9,7 +9,8 @@ class NewWritePage extends StatefulWidget {
 }
 
 class _NewWritePageState extends State<NewWritePage> {
-  FocusNode _focusSample = FocusNode();
+  TextEditingController _textTitleEditingController =
+      new TextEditingController();
 
   KeyboardVisibilityNotification _keyboardVisibility =
       new KeyboardVisibilityNotification();
@@ -74,6 +75,7 @@ class _NewWritePageState extends State<NewWritePage> {
                     fontSize: MediaQuery.of(context).size.width * 0.07,
                     fontWeight: FontWeight.bold),
                 maxLines: 1,
+                controller: _textTitleEditingController,
                 decoration: InputDecoration.collapsed(
                   hintText: "챕터제목",
                   hintStyle: TextStyle(
@@ -87,7 +89,7 @@ class _NewWritePageState extends State<NewWritePage> {
               child: Divider(),
               height: 15,
             ),
-            Expanded(child: Content()),
+            Expanded(child: Content(_textTitleEditingController)),
           ],
         ),
       ),

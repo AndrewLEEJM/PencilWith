@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:pencilwith/DBHelper/dbhelper.dart';
+import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 
 //This could be StatelessWidget but it won't work on Dialogs for now until this issue is fixed: https://github.com/flutter/flutter/issues/45839
 class Content extends StatefulWidget {
   final bool isDialog;
+  final textTitleController;
 
-  const Content({Key key, this.isDialog = false}) : super(key: key);
+  const Content(this.textTitleController, {Key key, this.isDialog = false})
+      : super(key: key);
 
   @override
-  _ContentState createState() => _ContentState();
+  _ContentState createState() => _ContentState(textTitleController);
 }
 
 class _ContentState extends State<Content> {
   final FocusNode _nodeText2 = FocusNode();
+  final textTitleCtl;
+
+  DBHelper dbHelper;
+  var db;
+
+  _ContentState(this.textTitleCtl);
+
   TextEditingController _textEditingController = TextEditingController();
   Controller getc = Get.put(Controller());
 
@@ -69,14 +81,56 @@ class _ContentState extends State<Content> {
                                 offset:
                                     int.parse(getc.textIndex.value.toString()) +
                                         1)),
-                    // IconButton(
-                    //     icon: Icon(Icons.add),
-                    //     onPressed: () async {
-                    //       var selection = _textEditingController.selection;
-                    //       createAlertDialog(context).then((value) {
-                    //         _prefixTextSelection('\n[$value]\n', selection);
-                    //       });
-                    //     }),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    GestureDetector(
+                      child: Text('저장'),
+                      onTap: () {
+                        db.then((database) {
+                          final _dateFormatter = DateFormat('yyyyMMdd');
+                          int rowCount = 0;
+                          dbHelper
+                              .getAllCount(Get.find<Controller>()
+                                  .currentProject
+                                  .value
+                                  .projectId
+                                  .toString())
+                              .then((value) {
+                            print(value);
+                            rowCount = value + 1;
+
+                            //ChapterObject({this.id, this.idx, this.title, this.content, this.date});
+
+                            ChapterObject ii = ChapterObject(
+                                id:
+                                    '${Get.find<Controller>().currentProject.value.projectId}',
+                                idx: rowCount.toString(),
+                                title: '${textTitleCtl.text.toString()}',
+                                content:
+                                    '${_textEditingController.text.toString()}',
+                                date:
+                                    '${_dateFormatter.format(DateTime.now())}');
+
+                            print(ii.id);
+                            print(ii.idx);
+                            print(ii.title);
+                            print(ii.content);
+                            print(ii.date);
+
+                            dbHelper.insertChapter(ii).then((value) {
+                              // _callDatabaseNoteList(Get.find<Controller>()
+                              //     .currentProject
+                              //     .value
+                              //     .projectId
+                              //     .toString());
+                              // Get.find<Controller>().splitList();
+                              // _textEditingController.clear();
+                            });
+                          });
+                        });
+                      },
+                    ),
                     Spacer(),
                     GestureDetector(
                       child: Row(
@@ -151,6 +205,8 @@ class _ContentState extends State<Content> {
       Get.find<Controller>().textIndex.value =
           int.parse(_textEditingController.selection.base.offset.toString());
     });
+    dbHelper = DBHelper();
+    db = dbHelper.initDatabase();
     super.initState();
   }
 

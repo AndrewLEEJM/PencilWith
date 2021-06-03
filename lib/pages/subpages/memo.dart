@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
+import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -21,12 +23,15 @@ class MemoPage extends StatefulWidget {
 class _MemoPageState extends State<MemoPage> {
   int _current = 0;
   bool visibleCheck = false;
+  DBHelper dbHelper;
 
+  var db;
   final TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
-    Get.find<Controller>().makingGridList2();
+    dbHelper = DBHelper();
+    db = dbHelper.initDatabase();
     super.initState();
 
     ///세로 고정
@@ -90,100 +95,117 @@ class _MemoPageState extends State<MemoPage> {
               flex: 6,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: CarouselSlider.builder(
-                      itemCount: Get.find<Controller>()
-                          .modifiedPostItList
-                          .length, //page count
-                      options: CarouselOptions(
-                          onPageChanged: (index, reason) {
-                            setState(() {
-                              _current = index;
-                            });
-                          },
-                          height: 300,
-                          autoPlay: false,
-                          enlargeCenterPage: true,
-                          viewportFraction: 0.8,
-                          aspectRatio: 16 / 12,
-                          initialPage: 0,
-                          enableInfiniteScroll: false),
-                      itemBuilder: (context, index, realIndex) => GridView(
-                          scrollDirection: Axis.vertical,
-                          reverse: false,
-                          controller: ScrollController(),
-                          physics: ScrollPhysics(),
-                          //padding: EdgeInsets.all(0.0),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: 16 / 15,
-                            // mainAxisSpacing: 5,
-                            // crossAxisSpacing: 5,
-                            crossAxisCount: 3,
-                          ),
-                          children: Get.find<Controller>()
-                              .modifiedPostItList[index]
-                              .map<Widget>((e) => GestureDetector(
-                                  onTap: () {
-                                    if (e.id == 'plus') {
-                                      getShowBottom('POSTIT');
-                                    }
-                                  },
-                                  child: Container(
-                                    child: Stack(children: [
-                                      Image.asset('images/posttemplete.png'),
-                                      Padding(
-                                        padding: EdgeInsets.only(
-                                            left: memoPadding,
-                                            right: memoPadding,
-                                            top: memoPadding * 1.5),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '',
-                                              style: TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Container(
-                                              child: Center(
-                                                child: e.id != 'plus'
-                                                    ? Text(
-                                                        '${e.title}',
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        maxLines: 3,
-                                                      )
-                                                    : Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(3),
-                                                        //decoration:
-                                                        // BoxDecoration(
-                                                        // color:
-                                                        //     bottomNavigatorColor
-                                                        //         .withOpacity(
-                                                        //             0.7),
-                                                        // shape: BoxShape.circle),
-                                                        child: Icon(
-                                                          Icons.add,
-                                                          color:
-                                                              bottomNavigatorColor
+                  GetBuilder<Controller>(
+                    builder: (controller) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: CarouselSlider.builder(
+                          itemCount: Get.find<Controller>()
+                              .modifiedPostItList
+                              .length, //page count
+                          options: CarouselOptions(
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _current = index;
+                                });
+                              },
+                              height: 300,
+                              autoPlay: false,
+                              enlargeCenterPage: true,
+                              viewportFraction: 0.8,
+                              aspectRatio: 16 / 12,
+                              initialPage: 0,
+                              enableInfiniteScroll: false),
+                          itemBuilder: (context, index, realIndex) => GridView(
+                              scrollDirection: Axis.vertical,
+                              reverse: false,
+                              controller: ScrollController(),
+                              physics: ScrollPhysics(),
+                              //padding: EdgeInsets.all(0.0),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                childAspectRatio: 16 / 15,
+                                // mainAxisSpacing: 5,
+                                // crossAxisSpacing: 5,
+                                crossAxisCount: 3,
+                              ),
+                              children: Get.find<Controller>()
+                                  .modifiedPostItList[index]
+                                  .map<Widget>((e) => GestureDetector(
+                                      onTap: () {
+                                        if (Get.find<Controller>()
+                                                .currentProject
+                                                .value
+                                                .projectId ==
+                                            null) {
+                                          Get.snackbar('프로젝트 선택',
+                                              '작업하실 프로젝트를 먼저 선택해주세요.',
+                                              snackPosition: SnackPosition.TOP);
+                                        } else {
+                                          if (e.id == 'plus') {
+                                            getShowBottom('POSTIT');
+                                          }
+                                        }
+                                      },
+                                      child: Container(
+                                        child: Stack(children: [
+                                          Image.asset(
+                                              'images/posttemplete.png'),
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: memoPadding,
+                                                right: memoPadding,
+                                                top: memoPadding * 1.5),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Container(
+                                                  child: Center(
+                                                    child: e.id != 'plus'
+                                                        ? Text(
+                                                            '${e.title}',
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 3,
+                                                          )
+                                                        : Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(3),
+                                                            //decoration:
+                                                            // BoxDecoration(
+                                                            // color:
+                                                            //     bottomNavigatorColor
+                                                            //         .withOpacity(
+                                                            //             0.7),
+                                                            // shape: BoxShape.circle),
+                                                            child: Icon(
+                                                              Icons.add,
+                                                              color: bottomNavigatorColor
                                                                   .withOpacity(
                                                                       0.7),
-                                                        )),
-                                              ),
+                                                            )),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      )
-                                    ]),
-                                  )))
-                              .toList()),
-                    ),
+                                          )
+                                        ]),
+                                      )))
+                                  .toList()),
+                        ),
+                      );
+                    },
+                    init: Controller(),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -226,7 +248,12 @@ class _MemoPageState extends State<MemoPage> {
                   Divider(),
                   Expanded(
                     child: Container(
-                      child: _getTodoList(),
+                      child: GetBuilder<Controller>(
+                        init: Controller(),
+                        builder: (controller) {
+                          return _getTodoList();
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -244,7 +271,13 @@ class _MemoPageState extends State<MemoPage> {
           if (Get.find<Controller>().getXTodoModelList[index].id == 'plus') {
             return GestureDetector(
               onTap: () {
-                getShowBottom('TODO');
+                if (Get.find<Controller>().currentProject.value.projectId ==
+                    null) {
+                  Get.snackbar('프로젝트 선택', '작업하실 프로젝트를 먼저 선택해주세요.',
+                      snackPosition: SnackPosition.TOP);
+                } else {
+                  getShowBottom('TODO');
+                }
               },
               child: Container(
                 height: 25,
@@ -265,11 +298,11 @@ class _MemoPageState extends State<MemoPage> {
       child: GestureDetector(
         onTap: () {
           setState(() {
-            if (Get.find<Controller>().getXTodoModelList[index].isDone ==
+            if (Get.find<Controller>().getXTodoModelList[index].done ==
                 'false') {
-              Get.find<Controller>().getXTodoModelList[index].isDone = 'true';
+              Get.find<Controller>().getXTodoModelList[index].done = 'true';
             } else {
-              Get.find<Controller>().getXTodoModelList[index].isDone = 'false';
+              Get.find<Controller>().getXTodoModelList[index].done = 'false';
             }
           });
         },
@@ -279,19 +312,19 @@ class _MemoPageState extends State<MemoPage> {
               activeColor: Colors.grey[700],
               value: Get.find<Controller>()
                           .getXTodoModelList[index]
-                          .isDone
+                          .done
                           .toString() ==
                       'true'
                   ? true
                   : false,
               onChanged: (value) {
                 setState(() {
-                  Get.find<Controller>().getXTodoModelList[index].isDone =
+                  Get.find<Controller>().getXTodoModelList[index].done =
                       value ? 'true' : 'false';
                 });
               },
             ),
-            Get.find<Controller>().getXTodoModelList[index].isDone == 'false'
+            Get.find<Controller>().getXTodoModelList[index].done == 'false'
                 ? Text(
                     '${Get.find<Controller>().getXTodoModelList[index].content}')
                 : Text(
@@ -413,11 +446,12 @@ class _MemoPageState extends State<MemoPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('tempo'),
+                  Text('메모작성'),
                   Divider(),
                   Text('작성일 :${dateFormatter.format(DateTime.now())}',
                       style: TextStyle(fontSize: 10)),
                   TextField(
+                    autofocus: true,
                     cursorColor: Colors.grey,
                     decoration: InputDecoration(
                         focusColor: Colors.grey,
@@ -452,15 +486,29 @@ class _MemoPageState extends State<MemoPage> {
                   textColor: Colors.white,
                   child: Text('MEMO'),
                   onPressed: () {
-                    setState(() {
-                      PostModel _postModel = PostModel(
-                          id: '3',
-                          date: '210515',
-                          title: 'insert',
-                          content: 'content');
-                      Get.find<Controller>().insertPostModel(_postModel);
+                    db.then((database) {
+                      final _dateFormatter = DateFormat('yyyyMMdd');
+                      dbHelper
+                          .insertNote(NoteObject(
+                              id:
+                                  '${Get.find<Controller>().currentProject.value.projectId}',
+                              div: 'POST',
+                              title:
+                                  '${_textEditingController.text.toString()}',
+                              content:
+                                  '${_textEditingController.text.toString()}',
+                              date: '${_dateFormatter.format(DateTime.now())}',
+                              done: 'false'))
+                          .then((value) {
+                        _callDatabaseNoteList(Get.find<Controller>()
+                            .currentProject
+                            .value
+                            .projectId
+                            .toString());
+                        Get.find<Controller>().splitList();
+                        _textEditingController.clear();
+                      });
                     });
-                    _textEditingController.clear();
                     Get.back();
                   },
                 ),
@@ -474,16 +522,40 @@ class _MemoPageState extends State<MemoPage> {
                   textColor: Colors.white,
                   child: Text('TODO'),
                   onPressed: () {
-                    setState(() {
-                      TodoModel _todoModel = TodoModel(
-                          id: '3',
-                          date: '210515',
-                          title: 'insert',
-                          isDone: 'false',
-                          content: 'content');
-                      Get.find<Controller>().insertTodoModel(_todoModel);
+                    db.then((database) {
+                      final _dateFormatter = DateFormat('yyyyMMdd');
+                      dbHelper
+                          .insertNote(NoteObject(
+                              id:
+                                  '${Get.find<Controller>().currentProject.value.projectId}',
+                              div: 'TODO',
+                              title:
+                                  '${_textEditingController.text.toString()}',
+                              content:
+                                  '${_textEditingController.text.toString()}',
+                              date: '${_dateFormatter.format(DateTime.now())}',
+                              done: 'false'))
+                          .then((value) {
+                        _callDatabaseNoteList(Get.find<Controller>()
+                            .currentProject
+                            .value
+                            .projectId
+                            .toString());
+                        Get.find<Controller>().splitList();
+                        _textEditingController.clear();
+                      });
                     });
-                    _textEditingController.clear();
+
+                    // setState(() {
+                    //   TodoModel _todoModel = TodoModel(
+                    //       id: '3',
+                    //       date: '210515',
+                    //       title: 'insert',
+                    //       isDone: 'false',
+                    //       content: 'content');
+                    //   Get.find<Controller>().insertTodoModel(_todoModel);
+                    // });
+                    //_textEditingController.clear();
                     Get.back();
                   },
                 ),
@@ -491,5 +563,22 @@ class _MemoPageState extends State<MemoPage> {
             ],
           );
         });
+  }
+
+  _callDatabaseNoteList(String projectId) {
+    Get.find<Controller>().noteListClear();
+    db.then((database) {
+      final _noteList = dbHelper.getNotes(projectId);
+      _noteList.then((note) {
+        note.forEach((e) {
+          Get.find<Controller>().insertAllNoteList(NoteObject.fromJson(e));
+          print(
+              'Get.find<Controller>().allNoteList.length:${Get.find<Controller>().allNoteList.length}');
+          print('note : ${note.toString()}');
+        });
+        Get.find<Controller>().splitList();
+        //Get.find<Controller>().makingGridList2();
+      });
+    });
   }
 }

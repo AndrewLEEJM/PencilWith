@@ -187,12 +187,13 @@ class _MyAppState extends State<MyApp> {
         },
         body: '${accessToken.toString()}');
 
+    print(accessToken.toString());
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
       Newbie nb = Newbie.fromJson(jsonResponse);
+      print(nb.body.registered);
       if (nb.body.registered) {
         //TODO : JWTtoken(nb.body.jwtToken)을 받아서, 진행
-
       } else {
         _moveNextPage();
       }
