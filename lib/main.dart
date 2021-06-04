@@ -31,8 +31,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    super.initState();
     _initKakaoTalkInstalled();
+    super.initState();
   }
 
   @override
@@ -57,34 +57,40 @@ class _MyAppState extends State<MyApp> {
     deviceHeight = MediaQuery.of(context).size.height.toDouble();
     deviceRatio = deviceWidth / deviceHeight;
 
-    return Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(),
-              Container(
-                color: Colors.grey[400],
-                child: Center(
-                  child: Text(
-                    '로고',
-                    style: TextStyle(
-                        fontSize: deviceWidth * 0.05,
-                        fontWeight: FontWeight.bold),
+    return WillPopScope(
+      onWillPop: () async {
+        bool result = onPressBackButton();
+        return await Future.value(result);
+      },
+      child: Scaffold(
+          resizeToAvoidBottomPadding: false,
+          body: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(),
+                Container(
+                  color: Colors.grey[400],
+                  child: Center(
+                    child: Text(
+                      '로고',
+                      style: TextStyle(
+                          fontSize: deviceWidth * 0.05,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
+                  width: deviceWidth * 0.7,
+                  height: deviceWidth * deviceRatio,
                 ),
-                width: deviceWidth * 0.7,
-                height: deviceWidth * deviceRatio,
-              ),
-              SizedBox(
-                height: 100,
-              ),
-              _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
-              _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
-            ],
-          ),
-        ));
+                SizedBox(
+                  height: 100,
+                ),
+                _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
+                _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
+              ],
+            ),
+          )),
+    );
   }
 
   void _moveNextPage() {
@@ -198,7 +204,19 @@ class _MyAppState extends State<MyApp> {
         _moveNextPage();
       }
     } else {
-      print('이건 서버문제야 확실해');
+      print('${response.statusCode}');
     }
+  }
+
+  bool onPressBackButton() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 3)) {
+      currentBackPressTime = now;
+      Get.snackbar('title', 'message', snackPosition: SnackPosition.BOTTOM);
+
+      return false;
+    }
+    return true;
   }
 }

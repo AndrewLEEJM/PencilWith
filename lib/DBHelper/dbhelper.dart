@@ -62,9 +62,10 @@ class DBHelper {
     return result;
   }
 
-  Future<List> getChapter(String index) async {
+  Future<List> getChapter(String projectId) async {
     Database db = await this.db;
-    var result = await db.rawQuery('select * from $tableName2 where id=$index');
+    var result =
+        await db.rawQuery('select * from $tableName2 where id=$projectId');
     return result;
   }
 

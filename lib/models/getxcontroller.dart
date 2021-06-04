@@ -1,11 +1,10 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/projectclass.dart';
-//import 'package:pencilwith/models/savenotes.dart';
-import 'package:pencilwith/models/todolistmodel.dart';
 
 class Controller extends GetxController {
   //tab page index
@@ -64,7 +63,9 @@ class Controller extends GetxController {
   }
 
   void noteListClear() {
-    allNoteList.clear();
+    if (allNoteList != null) {
+      allNoteList.clear();
+    }
   }
 
   void insertAllNoteList(NoteObject no) {
@@ -81,6 +82,29 @@ class Controller extends GetxController {
 
   void pageIndexMove(int index) {
     selectedIndex.value = index;
+    update();
+  }
+
+  List<ChapterObject> chapterRealList = [];
+
+  void chapterListClear() {
+    if (chapterRealList != null) {
+      this.chapterRealList = [];
+    }
+  }
+
+  // void equalChapterList(List<ChapterObject> param) {
+  //   this.chapterRealList = param;
+  //   update();
+  // }
+
+  void insertAllChapterList(ChapterObject co) {
+    chapterRealList.add(co);
+
+    chapterRealList.forEach((element) {
+      print(element.title);
+    });
+
     update();
   }
 

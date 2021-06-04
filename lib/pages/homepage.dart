@@ -7,6 +7,7 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/allproject.dart';
+import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
@@ -98,6 +99,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 onTap: () {
                   _callBackServer(apiNames.callEachProject,
                       index: '${element['projectId'].toString()}');
+
+                  Get.find<Controller>().chapterListClear();
+                  //챕터 부르기
+                  _makingChapterList(element['projectId'].toString());
                   Navigator.pop(context);
                 },
                 onLongPress: () {
@@ -131,9 +136,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _noteList.then((note) {
         note.forEach((e) {
           Get.find<Controller>().insertAllNoteList(NoteObject.fromJson(e));
-          print(
-              'Get.find<Controller>().allNoteList.length:${Get.find<Controller>().allNoteList.length}');
-          print('note : ${note.toString()}');
         });
         Get.find<Controller>().splitList();
         //Get.find<Controller>().makingGridList2();
@@ -212,16 +214,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 return GestureDetector(
                                     child: Text('배포'),
                                     onTap: () {
-                                      print('save');
-                                      Get.find<Controller>().saveInCtl();
+//                                      Get.find<Controller>().saveInCtl();
                                     });
                               } else if (selectedPageIndex == 2) {
-                                // print(
-                                //     '2selectedIndex : ${getc.selectedIndex.value}');
                                 return GestureDetector(
                                     child: Text('테스트'),
                                     onTap: () {
-                                      print('save');
                                       //getShowBottom();
                                     });
                               } else {
@@ -267,7 +265,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           GestureDetector(
             onHorizontalDragEnd: (DragEndDetails details) {
               if (details.primaryVelocity > 0) {
-                print(details.primaryVelocity);
                 if (selectedPageIndex != 0) {
                   setState(() {
                     selectedPageIndex--;
@@ -484,14 +481,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           //조회리스트 변경해주는 부분
           _callBackServer(apiNames.callAllProject);
           _textEditingModalController.clear();
-          print('insert project complete');
         } else {
-          print(response.statusCode);
           throw Exception('프로젝트 생성 에러');
         }
         break;
       default:
         break;
     }
+  }
+
+  void _makingChapterList(String projectId) {
+    Get.find<Controller>().chapterListClear();
+    db.then((database) {
+      final _chapterList = dbHelper.getChapter(projectId);
+      _chapterList.then((note) {
+        note.forEach((e) {
+          Get.find<Controller>()
+              .insertAllChapterList(ChapterObject.fromJson(e));
+        });
+      });
+    });
   }
 }

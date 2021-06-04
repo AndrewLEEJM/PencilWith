@@ -87,48 +87,55 @@ class _ContentState extends State<Content> {
                     GestureDetector(
                       child: Text('저장'),
                       onTap: () {
-                        db.then((database) {
-                          final _dateFormatter = DateFormat('yyyyMMdd');
-                          int rowCount = 0;
-                          dbHelper
-                              .getAllCount(Get.find<Controller>()
-                                  .currentProject
-                                  .value
-                                  .projectId
-                                  .toString())
-                              .then((value) {
-                            print(value);
-                            rowCount = value + 1;
+                        if (Get.find<Controller>()
+                                .currentProject
+                                .value
+                                .projectId ==
+                            null) {
+                          Get.snackbar('프로젝트 선택', '작업하실 프로젝트를 먼저 선택해주세요.',
+                              snackPosition: SnackPosition.TOP);
+                        } else {
+                          db.then((database) {
+                            final _dateFormatter = DateFormat('yyyyMMdd');
+                            int rowCount = 0;
+                            dbHelper
+                                .getAllCount(Get.find<Controller>()
+                                    .currentProject
+                                    .value
+                                    .projectId
+                                    .toString())
+                                .then((value) {
+                              print(value);
+                              rowCount = value + 1;
 
-                            //ChapterObject({this.id, this.idx, this.title, this.content, this.date});
+                              ChapterObject ii = ChapterObject(
+                                  id:
+                                      '${Get.find<Controller>().currentProject.value.projectId}',
+                                  idx: rowCount.toString(),
+                                  title: '${textTitleCtl.text.toString()}',
+                                  content:
+                                      '${_textEditingController.text.toString()}',
+                                  date:
+                                      '${_dateFormatter.format(DateTime.now())}');
+                              dbHelper.insertChapter(ii).then((value) {
+                                //TODO 챕터 리스트 만들고
 
-                            ChapterObject ii = ChapterObject(
-                                id:
-                                    '${Get.find<Controller>().currentProject.value.projectId}',
-                                idx: rowCount.toString(),
-                                title: '${textTitleCtl.text.toString()}',
-                                content:
-                                    '${_textEditingController.text.toString()}',
-                                date:
-                                    '${_dateFormatter.format(DateTime.now())}');
-
-                            print(ii.id);
-                            print(ii.idx);
-                            print(ii.title);
-                            print(ii.content);
-                            print(ii.date);
-
-                            dbHelper.insertChapter(ii).then((value) {
-                              // _callDatabaseNoteList(Get.find<Controller>()
-                              //     .currentProject
-                              //     .value
-                              //     .projectId
-                              //     .toString());
-                              // Get.find<Controller>().splitList();
-                              // _textEditingController.clear();
+                                _makingChapterList(Get.find<Controller>()
+                                    .currentProject
+                                    .value
+                                    .projectId
+                                    .toString());
+                                // _callDatabaseNoteList(Get.find<Controller>()
+                                //     .currentProject
+                                //     .value
+                                //     .projectId
+                                //     .toString());
+                                // Get.find<Controller>().splitList();
+                                // _textEditingController.clear();
+                              });
                             });
                           });
-                        });
+                        }
                       },
                     ),
                     Spacer(),
@@ -161,18 +168,57 @@ class _ContentState extends State<Content> {
                                                       .viewInsets
                                                       .bottom -
                                                   50),
-                                          child: ListView.builder(
-                                            itemBuilder: (context, index) {
-                                              return ListTile(
-                                                  onTap: () {},
-                                                  dense: true,
-                                                  title: Text(
-                                                      '${index + 1}.${chapterList[index]}',
-                                                      style: TextStyle(
-                                                          fontSize: 15)));
-                                            },
-                                            itemCount: chapterList.length,
-                                          ),
+                                          child: GetBuilder<Controller>(
+                                              init: Controller(),
+                                              builder: (controller) {
+                                                return ListView.builder(
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return ListTile(
+                                                        onTap: () {
+                                                          _getEachChapterSqlflite(
+                                                              Get.find<
+                                                                      Controller>()
+                                                                  .chapterRealList[
+                                                                      index]
+                                                                  .id,
+                                                              Get.find<
+                                                                      Controller>()
+                                                                  .chapterRealList[
+                                                                      index]
+                                                                  .idx);
+                                                          // _insertChapterApi(
+                                                          //     Get.find<
+                                                          //             Controller>()
+                                                          //         .chapterRealList[
+                                                          //             index]
+                                                          //         .title
+                                                          //         .toString(),
+                                                          //     Get.find<Controller>()
+                                                          //             .chapterRealList[
+                                                          //                 index]
+                                                          //             .id +
+                                                          //         Get.find<
+                                                          //                 Controller>()
+                                                          //             .chapterRealList[
+                                                          //                 index]
+                                                          //             .idx);
+                                                        },
+                                                        onLongPress: () {
+                                                          print(index);
+                                                        },
+                                                        dense: true,
+                                                        title: Text(
+                                                            '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}',
+                                                            style: TextStyle(
+                                                                fontSize: 15)));
+                                                  },
+                                                  itemCount:
+                                                      Get.find<Controller>()
+                                                          .chapterRealList
+                                                          .length,
+                                                );
+                                              }),
                                         ),
                                         height: 500,
                                       ),
@@ -207,6 +253,8 @@ class _ContentState extends State<Content> {
     });
     dbHelper = DBHelper();
     db = dbHelper.initDatabase();
+    _makingChapterList(
+        Get.find<Controller>().currentProject.value.projectId.toString());
     super.initState();
   }
 
@@ -254,7 +302,7 @@ class _ContentState extends State<Content> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('chater1'),
+            title: Text('Chater1'),
             content: TextField(
               controller: _textEditingModalController,
             ),
@@ -264,10 +312,60 @@ class _ContentState extends State<Content> {
                   Navigator.of(context)
                       .pop(_textEditingModalController.text.toString());
                 },
-                child: Text('submit'),
+                child: Text('Submit'),
               )
             ],
           );
         });
+  }
+
+  void _makingChapterList(String projectId) {
+    Get.find<Controller>().chapterListClear();
+    db.then((database) {
+      final _chapterList = dbHelper.getChapter(projectId);
+      _chapterList.then((note) {
+        note.forEach((e) {
+          Get.find<Controller>()
+              .insertAllChapterList(ChapterObject.fromJson(e));
+        });
+      });
+    });
+  }
+
+  void _insertChapterApi(String title, String id) {
+    // print(int.parse(id));
+    //
+    // db.then((database) {
+    //   final _chapterList = dbHelper.insertChapter(ChapterObject(
+    //     id: ,content: ,
+    //   ));
+    //   _chapterList.then((note) {
+    //     note.forEach((e) {
+    //       Get.find<Controller>()
+    //           .insertAllChapterList(ChapterObject.fromJson(e));
+    //     });
+    //   });
+    // });
+  }
+
+  void _getEachChapterSqlflite(String id, String idx) {
+    db.then((database) {
+      final _chapterEachList = dbHelper.getEachChapter(id, idx);
+      _chapterEachList.then((chapter) {
+        widget.textTitleController.text = chapter.first['title'];
+        _textEditingController.text = chapter.first['content'];
+        Get.back();
+      });
+    });
+
+    // db.then((database) {
+    //   final _chapterList = dbHelper.getChapter(projectId);
+    //   _chapterList.then((note) {
+    //     note.forEach((e) {
+    //       Get.find<Controller>()
+    //           .insertAllChapterList(ChapterObject.fromJson(e));
+    //     });
+    //   });
+    // });
   }
 }
