@@ -1,15 +1,17 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
-import 'package:kakao_flutter_sdk/user.dart';
+import 'package:kakao_flutter_sdk/user.dart' as kakaouser;
 import 'package:pencilwith/models/newbie.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/values/commonfunction.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() => runApp(GetMaterialApp(
       builder: (context, child) {
@@ -27,26 +29,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool _isKakaoTalkInstalled = false;
-
-  @override
-  void initState() {
-    _initKakaoTalkInstalled();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  _initKakaoTalkInstalled() async {
-    final installed = await isKakaoTalkInstalled();
-    setState(() {
-      _isKakaoTalkInstalled = installed;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     KakaoContext.clientId = '8468fb9fc49b635b980e625e78eb2f5f';
@@ -57,40 +39,108 @@ class _MyAppState extends State<MyApp> {
     deviceHeight = MediaQuery.of(context).size.height.toDouble();
     deviceRatio = deviceWidth / deviceHeight;
 
-    return WillPopScope(
-      onWillPop: () async {
-        bool result = onPressBackButton();
-        return await Future.value(result);
+    return FutureBuilder(
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          print(snapshot.error.toString());
+          return Center(
+            child: Text('a'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MyMyApp();
+        }
+        return CircularProgressIndicator();
       },
-      child: Scaffold(
-          resizeToAvoidBottomPadding: false,
-          body: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(),
-                Container(
-                  color: Colors.grey[400],
-                  child: Center(
-                    child: Text(
-                      '로고',
-                      style: TextStyle(
-                          fontSize: deviceWidth * 0.05,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  width: deviceWidth * 0.7,
-                  height: deviceWidth * deviceRatio,
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
-                _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
-              ],
-            ),
-          )),
     );
+  }
+}
+
+class MyMyApp extends StatefulWidget {
+  @override
+  _MyMyAppState createState() => _MyMyAppState();
+}
+
+class _MyMyAppState extends State<MyMyApp> {
+  bool _isKakaoTalkInstalled = false;
+
+  _initKakaoTalkInstalled() async {
+    final installed = await isKakaoTalkInstalled();
+    setState(() {
+      _isKakaoTalkInstalled = installed;
+    });
+  }
+
+  @override
+  void initState() {
+    _initKakaoTalkInstalled();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+            if (!snapshot.hasData) {
+              return SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(),
+                    Container(
+                      color: Colors.grey[400],
+                      child: Center(
+                        child: Text(
+                          '로고',
+                          style: TextStyle(
+                              fontSize: deviceWidth * 0.05,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      width: deviceWidth * 0.7,
+                      height: deviceWidth * deviceRatio,
+                    ),
+                    SizedBox(
+                      height: 100,
+                    ),
+                    _loginButton(
+                        '구글', deviceWidth, Colors.blue[900], Colors.white),
+                    _loginButton(
+                        '카카오', deviceWidth, Colors.yellow, Colors.black),
+                  ],
+                ),
+              );
+            } else {
+              return TermsPage();
+              //_moveNextPage();
+              //_moveNextPage();
+              // return Center(
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Text('${snapshot.data.displayName}님 환영합니다.'),
+              //       Text('${snapshot.data.email}님 환영합니다.'),
+              //       ClipRRect(
+              //         child: Image.network(snapshot.data.photoURL),
+              //         borderRadius: BorderRadius.circular(100),
+              //       ),
+              //       SizedBox(
+              //         height: 50,
+              //       ),
+              //       FlatButton(
+              //           color: Colors.grey[200],
+              //           onPressed: FirebaseAuth.instance.signOut,
+              //           child: Text('로그아웃'))
+              //     ],
+              //   ),
+              // );
+            }
+          },
+        ));
   }
 
   void _moveNextPage() {
@@ -116,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                 _loginWithKakao();
               }
             } else {
-              _moveNextPage();
+              signInWithGoogle();
             }
           },
           child: Text(
@@ -169,7 +219,7 @@ class _MyAppState extends State<MyApp> {
 
   logOutTalk() async {
     try {
-      var code = await UserApi.instance.logout();
+      var code = await kakaouser.UserApi.instance.logout();
       print(code.toString());
     } catch (e) {
       print(e);
@@ -178,7 +228,7 @@ class _MyAppState extends State<MyApp> {
 
   unlinkTalk() async {
     try {
-      var code = await UserApi.instance.unlink();
+      var code = await kakaouser.UserApi.instance.unlink();
       print(code.toString());
     } catch (e) {
       print(e);
@@ -208,15 +258,25 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  bool onPressBackButton() {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime) > Duration(seconds: 3)) {
-      currentBackPressTime = now;
-      Get.snackbar('title', 'message', snackPosition: SnackPosition.BOTTOM);
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
-      return false;
-    }
-    return true;
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    print('google token:${googleAuth.accessToken}');
+    print('aaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

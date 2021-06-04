@@ -82,4 +82,11 @@ class DBHelper {
         'select * from $tableName2 where id=$index and idx=$eachIndex');
     return result;
   }
+
+  Future<List> deleteEachChapter(String index, String eachIndex) async {
+    Database db = await this.db;
+    var result = await db
+        .rawQuery('delete from $tableName2 where id=$index and idx=$eachIndex');
+    return result;
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pencilwith/models/termmodel.dart';
@@ -18,6 +19,7 @@ class _TermsPageState extends State<TermsPage> {
 
   @override
   void initState() {
+    //FirebaseAuth.instance.signOut();
     super.initState();
   }
 

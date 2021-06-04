@@ -144,6 +144,8 @@ class _MemoPageState extends State<MemoPage> {
                                         } else {
                                           if (e.id == 'plus') {
                                             getShowBottom('POSTIT');
+                                          } else {
+                                            showMemoDialog(context, e);
                                           }
                                         }
                                       },
@@ -172,6 +174,12 @@ class _MemoPageState extends State<MemoPage> {
                                                     child: e.id != 'plus'
                                                         ? Text(
                                                             '${e.title}',
+                                                            style: TextStyle(
+                                                                fontSize: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.0275),
                                                             overflow:
                                                                 TextOverflow
                                                                     .ellipsis,
@@ -325,11 +333,18 @@ class _MemoPageState extends State<MemoPage> {
               },
             ),
             Get.find<Controller>().getXTodoModelList[index].done == 'false'
-                ? Text(
-                    '${Get.find<Controller>().getXTodoModelList[index].content}')
-                : Text(
-                    '${Get.find<Controller>().getXTodoModelList[index].content}',
-                    style: TextStyle(decoration: TextDecoration.lineThrough),
+                ? Expanded(
+                    child: Text(
+                      '${Get.find<Controller>().getXTodoModelList[index].content}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  )
+                : Expanded(
+                    child: Text(
+                        '${Get.find<Controller>().getXTodoModelList[index].content}',
+                        style:
+                            TextStyle(decoration: TextDecoration.lineThrough),
+                        overflow: TextOverflow.ellipsis),
                   ),
             //Text('${todoList[index]['content']}')
           ],
@@ -463,7 +478,7 @@ class _MemoPageState extends State<MemoPage> {
                       });
                     },
                     controller: _textEditingController,
-                    maxLength: 500,
+                    maxLength: 200,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     //decoration: InputDecoration(hintText: 'write memo'),
@@ -580,5 +595,32 @@ class _MemoPageState extends State<MemoPage> {
         //Get.find<Controller>().makingGridList2();
       });
     });
+  }
+
+  void showMemoDialog(BuildContext context, NoteObject p) async {
+    String result = await showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('${p.date}'),
+          content: Text("${p.content}"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.pop(context, "OK");
+              },
+            ),
+            // FlatButton(
+            //   child: Text('Cancel'),
+            //   onPressed: () {
+            //     Navigator.pop(context, "Cancel");
+            //   },
+            // ),
+          ],
+        );
+      },
+    );
   }
 }

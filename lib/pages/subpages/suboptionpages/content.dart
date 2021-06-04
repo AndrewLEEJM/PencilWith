@@ -5,6 +5,7 @@ import 'package:keyboard_actions/keyboard_actions.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
+import 'package:pencilwith/values/commonfunction.dart';
 
 //This could be StatelessWidget but it won't work on Dialogs for now until this issue is fixed: https://github.com/flutter/flutter/issues/45839
 class Content extends StatefulWidget {
@@ -125,13 +126,6 @@ class _ContentState extends State<Content> {
                                     .value
                                     .projectId
                                     .toString());
-                                // _callDatabaseNoteList(Get.find<Controller>()
-                                //     .currentProject
-                                //     .value
-                                //     .projectId
-                                //     .toString());
-                                // Get.find<Controller>().splitList();
-                                // _textEditingController.clear();
                               });
                             });
                           });
@@ -175,43 +169,62 @@ class _ContentState extends State<Content> {
                                                   itemBuilder:
                                                       (context, index) {
                                                     return ListTile(
-                                                        onTap: () {
-                                                          _getEachChapterSqlflite(
-                                                              Get.find<
-                                                                      Controller>()
+                                                      onTap: () {
+                                                        _getEachChapterSqlflite(
+                                                            Get.find<
+                                                                    Controller>()
+                                                                .chapterRealList[
+                                                                    index]
+                                                                .id,
+                                                            Get.find<
+                                                                    Controller>()
+                                                                .chapterRealList[
+                                                                    index]
+                                                                .idx);
+                                                      },
+                                                      // onLongPress: () {
+
+                                                      dense: true,
+                                                      title: Text(
+                                                          '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}',
+                                                          style: TextStyle(
+                                                              fontSize: 15)),
+                                                      trailing: TextButton(
+                                                        onPressed: () {
+                                                          db.then((database) {
+                                                            dbHelper
+                                                                .deleteEachChapter(
+                                                                    Get.find<
+                                                                            Controller>()
+                                                                        .chapterRealList[
+                                                                            index]
+                                                                        .id,
+                                                                    Get.find<
+                                                                            Controller>()
+                                                                        .chapterRealList[
+                                                                            index]
+                                                                        .idx)
+                                                                .then((value) {
+                                                              _makingChapterList(Get
+                                                                      .find<
+                                                                          Controller>()
                                                                   .chapterRealList[
                                                                       index]
-                                                                  .id,
-                                                              Get.find<
-                                                                      Controller>()
-                                                                  .chapterRealList[
-                                                                      index]
-                                                                  .idx);
-                                                          // _insertChapterApi(
-                                                          //     Get.find<
-                                                          //             Controller>()
-                                                          //         .chapterRealList[
-                                                          //             index]
-                                                          //         .title
-                                                          //         .toString(),
+                                                                  .id);
+                                                            });
+                                                          });
+                                                          // closedKeyboard(
+                                                          //     context);
+                                                          // Get.back();
+                                                          // deleteChapterDialog(
+                                                          //     context,
                                                           //     Get.find<Controller>()
                                                           //             .chapterRealList[
-                                                          //                 index]
-                                                          //             .id +
-                                                          //         Get.find<
-                                                          //                 Controller>()
-                                                          //             .chapterRealList[
-                                                          //                 index]
-                                                          //             .idx);
+                                                          //         index]);
                                                         },
-                                                        onLongPress: () {
-                                                          print(index);
-                                                        },
-                                                        dense: true,
-                                                        title: Text(
-                                                            '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}',
-                                                            style: TextStyle(
-                                                                fontSize: 15)));
+                                                        child: Text('DEL'),
+                                                      ),
+                                                    );
                                                   },
                                                   itemCount:
                                                       Get.find<Controller>()
@@ -357,15 +370,42 @@ class _ContentState extends State<Content> {
         Get.back();
       });
     });
+  }
 
-    // db.then((database) {
-    //   final _chapterList = dbHelper.getChapter(projectId);
-    //   _chapterList.then((note) {
-    //     note.forEach((e) {
-    //       Get.find<Controller>()
-    //           .insertAllChapterList(ChapterObject.fromJson(e));
-    //     });
-    //   });
-    // });
+  Future<String> deleteChapterDialog(
+      BuildContext context, ChapterObject chapter) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Text('해당 챕터를 삭제하시겠습니까?'),
+            content: Text('chapter no : ${chapter.id}\n'
+                'chapter name : ${chapter.title}'),
+            actions: <Widget>[
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('취소'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  db.then((database) {
+                    dbHelper
+                        .deleteEachChapter(chapter.id, chapter.idx)
+                        .then((value) {
+                      _makingChapterList(chapter.id.toString());
+                    });
+                  });
+
+                  Navigator.of(context).pop();
+                },
+                child: Text('삭제', style: TextStyle(color: Colors.red)),
+              )
+            ],
+          );
+        });
   }
 }
