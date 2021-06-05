@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pencilwith/pages/profile/manuscript.dart';
 
+import '../main.dart';
 import 'agreement/agreement.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -29,6 +31,9 @@ class ProfilePage extends StatelessWidget {
             padding: EdgeInsets.zero,
             children: <Widget>[
               UserAccountsDrawerHeader(
+                decoration: new BoxDecoration(
+                  color: new Color(0xffF0A8AB),
+                ),
                 accountName: Text('냥냥이'),
                 accountEmail: Text('developine.com@gmail.com'),
               ),
@@ -112,7 +117,7 @@ Widget infoSection = Container(
 
 Widget RowInfo({String tag, String val}) {
   return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.all(15),
       child: Row(children: [
         Container(
           alignment: Alignment.center,
@@ -143,9 +148,15 @@ Widget intoroduceSection = Container(
   padding: const EdgeInsets.all(12),
   child: Column(
     children: [
-      Text('자기소개'),
+      Text(
+        '자기소개',
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+      ),
+      SizedBox(
+        width: 10,
+      ),
       Container(
-          height: 100,
+          height: 150,
           decoration: BoxDecoration(
             border: Border.all(
               width: 1,
@@ -193,7 +204,9 @@ $title하시겠습니까?''',
                         child: Column(
                           children: [
                             RaisedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.off(() => MyApp());
+                              },
                               color: Colors.white,
                               child: Text(title,
                                   style: TextStyle(

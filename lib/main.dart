@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/user.dart';
 import 'package:pencilwith/models/newbie.dart';
+import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/values/commonfunction.dart';
@@ -56,8 +57,8 @@ class _MyAppState extends State<MyApp> {
     deviceWidth = MediaQuery.of(context).size.width.toDouble();
     deviceHeight = MediaQuery.of(context).size.height.toDouble();
     deviceRatio = deviceWidth / deviceHeight;
-
     return Scaffold(
+        backgroundColor: new Color(0xffF0A8AB),
         resizeToAvoidBottomPadding: false,
         body: SafeArea(
           child: Column(
@@ -192,7 +193,7 @@ class _MyAppState extends State<MyApp> {
       Newbie nb = Newbie.fromJson(jsonResponse);
       if (nb.body.registered) {
         //TODO : JWTtoken(nb.body.jwtToken)을 받아서, 진행
-
+        Get.off(() => MainPage());
       } else {
         _moveNextPage();
       }

@@ -46,15 +46,15 @@ class Header {
 
 class Body {
   String accessToken;
-  Null userAgreement;
-  Null jwtToken;
+  String userId;
+  String jwtToken;
   bool registered;
 
-  Body({this.accessToken, this.userAgreement, this.jwtToken, this.registered});
+  Body({this.accessToken, this.userId, this.jwtToken, this.registered});
 
   Body.fromJson(Map<String, dynamic> json) {
     accessToken = json['accessToken'];
-    userAgreement = json['userAgreement'];
+    userId = json['userId'];
     jwtToken = json['jwtToken'];
     registered = json['registered'];
   }
@@ -62,7 +62,7 @@ class Body {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['accessToken'] = this.accessToken;
-    data['userAgreement'] = this.userAgreement;
+    data['userId'] = this.userId;
     data['jwtToken'] = this.jwtToken;
     data['registered'] = this.registered;
     return data;

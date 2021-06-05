@@ -13,12 +13,15 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
-  String selectedGender = 'MAN';
+  String selectedGender;
   String selectedYear;
   String selectedMonth;
   String selectedDay;
   String selectedLocation;
   String selectedExperience;
+  final nickName = TextEditingController();
+  final introduce = TextEditingController();
+
   var years = [];
   var months = [];
   var days = [];
@@ -32,9 +35,14 @@ class _AccountState extends State<Account> {
       this.years.add(i.toString());
     }
     for (var i = 1; i <= 31; i++) {
-      this.days.add(i.toString());
-      if (i < 13) {
-        this.months.add(i.toString());
+      if (i < 10) {
+        this.days.add('0' + i.toString());
+        this.months.add('0' + i.toString());
+      } else {
+        this.days.add(i.toString());
+        if (i < 13) {
+          this.months.add(i.toString());
+        }
       }
     }
   }
@@ -61,14 +69,30 @@ class _AccountState extends State<Account> {
       ),
       body: ListView(
         children: [
-          imageSection,
           Container(
-            padding: EdgeInsets.only(left: 100, right: 100),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: '닉네임',
+              child: Padding(
+            padding: EdgeInsets.only(left: 32, top: 60, right: 32, bottom: 40),
+            child: Text(
+              '작가 활동에 사용될 정보를 입력해주세요.',
+              style: GoogleFonts.lato(
+                textStyle: Theme.of(context).textTheme.headline4,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
               ),
             ),
+          )),
+          Row(children: <Widget>[
+            Title(title: '닉네임'),
+            Container(
+              width: 250,
+              child: TextField(
+                controller: nickName,
+              ),
+            ),
+          ]),
+          SizedBox(
+            height: 10,
           ),
           Row(
             children: <Widget>[
@@ -99,6 +123,9 @@ class _AccountState extends State<Account> {
                 "여자",
               ),
             ],
+          ),
+          SizedBox(
+            height: 10,
           ),
           Row(
             children: <Widget>[
@@ -144,28 +171,33 @@ class _AccountState extends State<Account> {
               Text('일')
             ],
           ),
+          SizedBox(
+            height: 10,
+          ),
           Row(
             children: <Widget>[
               Title(title: '지역'),
               DropdownButton(
                   value: this.selectedLocation,
                   items: [
-                    '서울특별시',
-                    '경기도',
-                    '인천광역시',
+                    '서울',
+                    '인천',
+                    '경기북부',
+                    '경기남부',
                     '강원도',
-                    '대전광역시',
-                    '세종특별자치시',
+                    '대전',
+                    '세종',
                     '충청북도',
                     '충청남도',
-                    '광주광역시',
+                    '광주',
                     '전라북도',
-                    '전라남도' '대구광역시',
+                    '전라남도',
+                    '대구',
                     '울산광역시',
                     '경상북도',
                     '경상남도',
-                    '부산광역시',
-                    '제주특별자치도'
+                    '부산',
+                    '제주도'
                   ].map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
@@ -175,6 +207,9 @@ class _AccountState extends State<Account> {
                     });
                   }),
             ],
+          ),
+          SizedBox(
+            height: 10,
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -196,7 +231,7 @@ class _AccountState extends State<Account> {
               Container(
                 child: Radio(
                     visualDensity: VisualDensity(horizontal: -1.5),
-                    value: '5년이하',
+                    value: 'INTERMEDIATE',
                     groupValue: this.selectedExperience,
                     onChanged: (val) {
                       setState(() {
@@ -209,7 +244,7 @@ class _AccountState extends State<Account> {
               ),
               Radio(
                   visualDensity: VisualDensity(horizontal: -1.5),
-                  value: '5년이상',
+                  value: 'SENIOR',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
                     setState(() {
@@ -223,7 +258,7 @@ class _AccountState extends State<Account> {
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(left: 32),
+            padding: EdgeInsets.only(left: 32, top: 20),
             child: Text(
               "자기소개",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
@@ -238,28 +273,34 @@ class _AccountState extends State<Account> {
             ),
             child: TextField(
               keyboardType: TextInputType.multiline,
-              maxLines: 5,
+              maxLines: 7,
+              controller: introduce,
             ),
           ),
           SizedBox(
-            height: 20,
+            height: 50,
           ),
           GestureDetector(
             onTap: () {
-              if (this.selectedYear != null &&
+              if (this.nickName.text != null &&
+                  this.selectedYear != null &&
                   this.selectedExperience != null &&
                   this.selectedDay != null &&
                   this.selectedLocation != null &&
                   this.selectedMonth != null) {
-                _registerUser({
+                var formData = {
+                  'accessToken':
+                      'h7luDvsMdU3sq-R6O7efDnEtR4Sn1AYQA4kdkwo9dJkAAAF53DeUdQ',
+                  'username': this.nickName.text,
+                  'introduction': this.introduce.text,
                   'birth':
-                      '${this.selectedYear}-${this.selectedMonth}-${this.selectedDay}',
+                      '${this.selectedYear}.${this.selectedMonth}.${this.selectedDay}',
                   'careerType': this.selectedExperience,
                   'genderType': this.selectedGender,
                   'introduction': '',
                   'locationType': this.selectedLocation,
-                  'username': 'pencil'
-                });
+                };
+                _registerUser(formData);
               } else {
                 print('no enough value');
               }
@@ -282,7 +323,7 @@ class _AccountState extends State<Account> {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -311,31 +352,21 @@ Widget imageSection = Container(
 );
 
 Future<void> _registerUser(body) async {
-  print(jwtToken);
   var url = 'https://pencil-with.com/api/auth/sign-up';
-  var data = json.encode({
-    'accessToken': 'Bearer $jwtToken'.toString(),
-    'birth': '1999-02-08',
-    'careerType': 'NEWBIE',
-    'genderType': 'MEAL',
-    'introduction': '',
-    'id': 'pencil',
-    'password': '1234',
-    'locationType': 'SEOUL',
-    'username': 'pencil'
-  });
+  print(body);
   try {
     var response = await http.post(url,
         headers: {
           "Content-Type": "application/json",
-          'Authorization': 'Bearer $jwtToken'
+          // 'Authorization': 'Bearer $jwtToken'
         },
-        body: data);
+        body: json.encode(body));
 
     if (response.statusCode == 200) {
       _moveNextPage();
     } else {
       print('이건 서버문제야 확실해');
+      Get.off(() => MainPage());
     }
   } catch (e) {
     print(e);
