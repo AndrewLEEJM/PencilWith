@@ -147,8 +147,12 @@ class Controller extends GetxController {
       for (int j = 0; j < restrictCount; j++) {
         if (index == getXPostModelList.length) {
           tmpList.add(
-            PostModel(
-                id: 'plus', date: '210511', title: '추가하기', content: 'content1'),
+            NoteObject(
+                id: 'plus',
+                idx: '9999991231000000',
+                date: '99991231',
+                title: '추가하기',
+                content: 'content1'),
           );
         } else {
           tmpList.add(Get.find<Controller>().getXPostModelList[index]);

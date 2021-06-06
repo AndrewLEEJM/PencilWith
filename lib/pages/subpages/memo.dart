@@ -24,6 +24,7 @@ class _MemoPageState extends State<MemoPage> {
   int _current = 0;
   bool visibleCheck = false;
   DBHelper dbHelper;
+  final memoFormatter = DateFormat('yyMMddHHmmss');
 
   var db;
   final TextEditingController _textEditingController = TextEditingController();
@@ -312,6 +313,17 @@ class _MemoPageState extends State<MemoPage> {
             } else {
               Get.find<Controller>().getXTodoModelList[index].done = 'false';
             }
+
+            db.then((database) {
+              dbHelper
+                  .updateDoneNote(
+                      Get.find<Controller>().getXTodoModelList[index].id,
+                      Get.find<Controller>().getXTodoModelList[index].idx,
+                      Get.find<Controller>().getXTodoModelList[index].done)
+                  .then((value) {
+                print('complete update');
+              });
+            });
           });
         },
         child: Row(
@@ -451,6 +463,7 @@ class _MemoPageState extends State<MemoPage> {
   Future<void> _displayTextInputDialog(
       BuildContext context, String index) async {
     final dateFormatter = DateFormat('yy.MM.dd');
+
     var tmpMemo;
     return showDialog(
         context: context,
@@ -507,6 +520,8 @@ class _MemoPageState extends State<MemoPage> {
                           .insertNote(NoteObject(
                               id:
                                   '${Get.find<Controller>().currentProject.value.projectId}',
+                              idx:
+                                  '${Get.find<Controller>().currentProject.value.projectId}${memoFormatter.format(DateTime.now())}',
                               div: 'POST',
                               title:
                                   '${_textEditingController.text.toString()}',
@@ -543,6 +558,8 @@ class _MemoPageState extends State<MemoPage> {
                           .insertNote(NoteObject(
                               id:
                                   '${Get.find<Controller>().currentProject.value.projectId}',
+                              idx:
+                                  '${Get.find<Controller>().currentProject.value.projectId}${memoFormatter.format(DateTime.now())}',
                               div: 'TODO',
                               title:
                                   '${_textEditingController.text.toString()}',
@@ -560,17 +577,6 @@ class _MemoPageState extends State<MemoPage> {
                         _textEditingController.clear();
                       });
                     });
-
-                    // setState(() {
-                    //   TodoModel _todoModel = TodoModel(
-                    //       id: '3',
-                    //       date: '210515',
-                    //       title: 'insert',
-                    //       isDone: 'false',
-                    //       content: 'content');
-                    //   Get.find<Controller>().insertTodoModel(_todoModel);
-                    // });
-                    //_textEditingController.clear();
                     Get.back();
                   },
                 ),
@@ -612,12 +618,6 @@ class _MemoPageState extends State<MemoPage> {
                 Navigator.pop(context, "OK");
               },
             ),
-            // FlatButton(
-            //   child: Text('Cancel'),
-            //   onPressed: () {
-            //     Navigator.pop(context, "Cancel");
-            //   },
-            // ),
           ],
         );
       },

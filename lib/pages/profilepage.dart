@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pencilwith/main.dart';
 import 'package:pencilwith/pages/profile/manuscript.dart';
 
 import '../main.dart';
@@ -16,13 +19,6 @@ class ProfilePage extends StatelessWidget {
           'P R O F I L E',
           style: TextStyle(color: Colors.black),
         ),
-        // actions: <Widget>[
-        //   IconButton(
-        //     icon: Icon(Icons.menu),
-        //     onPressed: () {},
-        //     color: Colors.black,
-        //   )
-        // ],
         iconTheme: IconThemeData(color: Colors.black),
       ),
       endDrawer: Drawer(
@@ -205,7 +201,12 @@ $title하시겠습니까?''',
                           children: [
                             RaisedButton(
                               onPressed: () {
-                                Get.off(() => MyApp());
+                                //todo google logout or kakao logout
+                                Firebase.initializeApp().then((value) {
+                                  FirebaseAuth.instance.signOut();
+                                  Get.off(() => MyApp());
+                                });
+                                //commonFireßbaseAuth.instance.signOut();
                               },
                               color: Colors.white,
                               child: Text(title,

@@ -4,8 +4,10 @@ closedKeyboard(BuildContext ctx) async {
   await FocusScope.of(ctx).requestFocus(new FocusNode());
 }
 
-final String jwtToken =
-    'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsImF1dGgiOiJST0xFX1VTRVIsIFJPTEVfQURNSU4iLCJleHAiOjE2MjM2ODc4NDl9.tt1J1_TddRAEl2UZOfmtQgvJMjIafjE72LJMdmRDyJ9f7_2oT-uj3C8S4MP2iz7GkcJcUWSj2Va2KSx5Klle0g';
+String jwtToken =
+    'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsImF1dGgiOiJST0xFX1VTRVIsIFJPTEVfQURNSU4iLCJleHAiOjE2MjM2ODc4NDl9.tt1J1_TddRAEl2UZOfmtQgvJMjIafjE72LJMdmRDyJ9f7_2oT-uj3C8S4MP2iz7GkcJcUWSj2Va2KSx5Klle0g';
+
+String myAccessToken = '';
 
 double deviceWidth = 0.0;
 double deviceHeight = 0.0;

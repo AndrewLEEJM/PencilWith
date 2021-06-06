@@ -37,7 +37,7 @@ class DBHelper {
 
   void _onCreate(Database db, int version) async {
     await db.execute(
-        'create table $tableName (id TEXT NOT NULL, div TEXT NOT NULL, title TEXT, content TEXT not null, date text, done text )');
+        'create table $tableName (id TEXT NOT NULL, idx text not null, div TEXT NOT NULL, title TEXT, content TEXT not null, date text, done text )');
     await db.execute(
         'create table ChapterNote (id TEXT NOT NULL, idx text not null, title TEXT not null, content TEXT not null, date text)');
   }
@@ -48,13 +48,22 @@ class DBHelper {
     return result;
   }
 
+  Future<void> updateDoneNote(
+      String projectId, String idx, String doneValue) async {
+    Database db = await this.db;
+    //var result =
+    await db.rawUpdate('update ProjectNote set done = ? where id=? and idx=?',
+        [doneValue, projectId, idx]);
+    //return result;
+  }
+
   Future<List> getNotes(String index) async {
     Database db = await this.db;
     var result = await db.rawQuery('select * from $tableName where id=$index');
     return result;
   }
 
-  //---------------------------------
+  //---------------------------------chapter sql-------
 
   Future<int> insertChapter(ChapterObject chapter) async {
     Database db = await this.db;
