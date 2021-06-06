@@ -97,6 +97,16 @@ class _ContentState extends State<Content> {
                               snackPosition: SnackPosition.TOP);
                         } else {
                           db.then((database) {
+                            if (_textEditingController.text
+                                        .replaceAll(' ', '')
+                                        .length ==
+                                    0 ||
+                                textTitleCtl.text.replaceAll(' ', '').length ==
+                                    0) {
+                              Get.snackbar('챕터 입력', '챕터의 제목 및 내용을 입력해주세요.',
+                                  snackPosition: SnackPosition.TOP);
+                            }
+
                             final _dateFormatter = DateFormat('yyyyMMdd');
                             int rowCount = 0;
                             dbHelper

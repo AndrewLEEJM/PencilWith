@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:pencilwith/models/signupobject.dart';
 import 'package:pencilwith/pages/mainpage.dart';
+import 'package:http/http.dart' as http;
+import 'package:pencilwith/values/commonfunction.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -10,12 +16,18 @@ class Account extends StatefulWidget {
 }
 
 class _AccountState extends State<Account> {
-  String radioValue = 'MAN';
+  String radioValue = 'MALE';
   String selectedYear;
   String selectedMonth;
   String selectedDay;
   String selectedLocation;
   String selectedExperience;
+
+  TextEditingController _textEditingController = new TextEditingController();
+  TextEditingController _textNickNameController = new TextEditingController();
+
+  DateFormat signinDateFormat = DateFormat('yyyy.MM.dd');
+
   var years = [];
   var months = [];
   var days = [];
@@ -62,6 +74,7 @@ class _AccountState extends State<Account> {
           Container(
             padding: EdgeInsets.only(left: 100, right: 100),
             child: TextField(
+              controller: _textNickNameController,
               decoration: InputDecoration(
                 labelText: '닉네임',
               ),
@@ -74,7 +87,7 @@ class _AccountState extends State<Account> {
                 width: 20,
               ),
               Radio(
-                  value: 'MAN',
+                  value: 'MALE',
                   groupValue: this.radioValue,
                   onChanged: (val) {
                     setState(() {
@@ -85,7 +98,7 @@ class _AccountState extends State<Account> {
                 "남자",
               ),
               Radio(
-                  value: 'WOMEN',
+                  value: 'FEMALE',
                   groupValue: this.radioValue,
                   onChanged: (val) {
                     setState(() {
@@ -152,7 +165,7 @@ class _AccountState extends State<Account> {
                     '인천광역시',
                     '강원도',
                     '대전광역시',
-                    '세종특별자치시',
+                    '세종',
                     '충청북도',
                     '충청남도',
                     '광주광역시',
@@ -180,7 +193,7 @@ class _AccountState extends State<Account> {
               Title(title: '작가역량'),
               Radio(
                   visualDensity: VisualDensity(horizontal: -1.5),
-                  value: '입문',
+                  value: 'NEWBIE',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
                     setState(() {
@@ -193,7 +206,7 @@ class _AccountState extends State<Account> {
               Container(
                 child: Radio(
                     visualDensity: VisualDensity(horizontal: -1.5),
-                    value: '5년이하',
+                    value: 'INTERMEDIATE',
                     groupValue: this.selectedExperience,
                     onChanged: (val) {
                       setState(() {
@@ -206,7 +219,7 @@ class _AccountState extends State<Account> {
               ),
               Radio(
                   visualDensity: VisualDensity(horizontal: -1.5),
-                  value: '5년이상',
+                  value: 'SENIOR',
                   groupValue: this.selectedExperience,
                   onChanged: (val) {
                     setState(() {
@@ -234,6 +247,7 @@ class _AccountState extends State<Account> {
               ),
             ),
             child: TextField(
+              controller: _textEditingController,
               keyboardType: TextInputType.multiline,
               maxLines: 5,
             ),
@@ -243,16 +257,24 @@ class _AccountState extends State<Account> {
           ),
           GestureDetector(
             onTap: () {
-              /* if (this.selectedYear != null &&
+              if (this.selectedYear != null &&
                   this.selectedExperience != null &&
                   this.selectedDay != null &&
                   this.selectedLocation != null &&
                   this.selectedMonth != null) {
-                Get.off(MainPage());
+                callSignUp();
+
+                print('selectedYear:$selectedYear');
+                print('selectedMonth:$selectedMonth');
+                print('selectedDay:$selectedDay');
+                print('selectedExperience:$selectedExperience');
+                print('selectedLocation:$selectedLocation');
+
+                // Get.off(MainPage());
               } else {
-                print('no enough value');
-              } */
-              Get.off(MainPage());
+                Get.snackbar('Note', 'Please fill the information',
+                    snackPosition: SnackPosition.BOTTOM);
+              }
             },
             child: Container(
               decoration: BoxDecoration(
@@ -276,6 +298,50 @@ class _AccountState extends State<Account> {
         ],
       ),
     );
+  }
+
+  Future<void> callSignUp() async {
+    var url = 'https://pencil-with.com/api/auth/sign-up';
+
+    final _body = {
+      'accessToken': myAccessToken,
+      'birth': signinDateFormat.format(DateTime(int.parse(selectedYear),
+          int.parse(selectedMonth), int.parse(selectedDay))),
+      'careerType': selectedExperience,
+      'genderType': radioValue,
+      'introduction': _textEditingController.text,
+      'locationType': selectedLocation,
+      'username': _textNickNameController.text
+    };
+
+    var response = await http.post(url,
+        headers: {
+          'Content-type': 'application/json ; charset=utf-8',
+          'Accept': 'application/json ; charset=utf-8',
+        },
+        body: jsonEncode(_body));
+
+    print(jsonDecode(response.body).toString());
+
+    if (response.statusCode == 200) {
+      var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse.toString());
+
+      SignupObject signupObject =
+          SignupObject.fromJson(json.decode(response.body));
+
+      print(signupObject.body.registered);
+      print(signupObject.body.jwtToken);
+
+      if (signupObject.body.registered) {
+        jwtToken = signupObject.body.jwtToken;
+        Get.off(() => MainPage());
+      } else {
+        throw Exception('You cannot join us!!');
+      }
+    } else {
+      throw Exception('${response.statusCode}');
+    }
   }
 }
 

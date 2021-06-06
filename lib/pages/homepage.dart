@@ -212,13 +212,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 );
                               } else if (selectedPageIndex == 1) {
                                 return GestureDetector(
-                                    child: Text('배포'),
-                                    onTap: () {
-//                                      Get.find<Controller>().saveInCtl();
-                                    });
+                                    child: Text('배포'), onTap: () {});
                               } else if (selectedPageIndex == 2) {
                                 return GestureDetector(
-                                    child: Text('테스트'),
+                                    child: Text('Save'),
                                     onTap: () {
                                       //getShowBottom();
                                     });
@@ -239,7 +236,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         height: MediaQuery.of(context).size.height -
             MediaQuery.of(context).padding.bottom -
             50 - //상단
-            20 - //?
+            20 - //padding
             65 - //하단
             MediaQuery.of(context).padding.top,
         child: ListView(children: [
@@ -399,7 +396,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           headers: {
             'Content-type': contextType,
             'Accept': contextType,
-            'Authorization': 'Bearer $jwtToken'
+            'Authorization': jwtToken
           },
         );
         if (response.statusCode == 200) {
@@ -432,7 +429,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           headers: {
             'Content-type': contextType,
             'Accept': contextType,
-            'Authorization': 'Bearer $jwtToken'
+            'Authorization': jwtToken
           },
         );
         if (response.statusCode == 200) {
@@ -449,10 +446,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         url = 'https://pencil-with.com/api/projects/$index';
         response = await http.delete(
           url,
-          headers: {
-            'Content-type': contextType,
-            'Authorization': 'Bearer $jwtToken'
-          },
+          headers: {'Content-type': contextType, 'Authorization': jwtToken},
         );
         if (response.statusCode == 200) {
           Get.snackbar('삭제완료 안내', '삭제가 완료되었습니다.',
@@ -470,7 +464,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         response = await http.post(url,
             headers: {
               "Content-Type": "application/json",
-              'Authorization': 'Bearer $jwtToken'
+              'Authorization': jwtToken
             },
             body: body);
         if (response.statusCode == 200) {
@@ -480,6 +474,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           Get.find<Controller>().changeProject(newProject);
           //조회리스트 변경해주는 부분
           _callBackServer(apiNames.callAllProject);
+          _callBackServer(apiNames.callEachProject,
+              index: Get.find<Controller>()
+                  .currentProject
+                  .value
+                  .projectId
+                  .toString());
           _textEditingModalController.clear();
         } else {
           throw Exception('프로젝트 생성 에러');
