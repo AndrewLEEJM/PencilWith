@@ -8,7 +8,32 @@ import 'package:pencilwith/pages/profile/manuscript.dart';
 import '../main.dart';
 import 'agreement/agreement.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<ProfilePage> {
+  String _nickName;
+  String _gender;
+  String _birth;
+  String _experience;
+  String _location;
+  String _introduction;
+  String _id;
+
+  @override
+  initState() {
+    super.initState();
+    _nickName = 'asdasd';
+    _gender = '남성';
+    _birth = '2000.02.04';
+    _experience = 'NEWBIE';
+    _location = '서울';
+    _introduction = '하이용sadsadsad';
+    _id = 'google@gmail.com';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,8 +55,8 @@ class ProfilePage extends StatelessWidget {
                 decoration: new BoxDecoration(
                   color: new Color(0xffF0A8AB),
                 ),
-                accountName: Text('냥냥이'),
-                accountEmail: Text('developine.com@gmail.com'),
+                accountName: Text(_nickName),
+                accountEmail: Text(_id),
               ),
               ListTile(
                 leading: Icon(Icons.assignment_ind),
@@ -82,36 +107,124 @@ class ProfilePage extends StatelessWidget {
             ],
           )),
       body: ListView(
-        children: [imageSection, infoSection, intoroduceSection],
+        children: [
+          imageSection,
+          InfoSection(_nickName, _gender, _birth, _location, _experience),
+          IntoroduceSection(_introduction)
+        ],
+      ),
+    );
+  }
+
+  Widget imageSection = Container(
+    margin: const EdgeInsets.all(20),
+    child: Center(
+      child: CircleAvatar(
+        radius: 70.0,
+        backgroundImage: AssetImage('images/cat.jpg'),
+      ),
+    ),
+  );
+}
+
+class InfoSection extends StatelessWidget {
+  final nickName;
+  final gender;
+  final birth;
+  final location;
+  final experience;
+  InfoSection(
+      this.nickName, this.gender, this.birth, this.location, this.experience);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          RowInfo('닉네임', this.nickName),
+          RowInfo('성별', this.gender),
+          RowInfo('생년월일', this.birth),
+          RowInfo('지역', this.location),
+          RowInfo('작가역량', this.experience),
+        ],
       ),
     );
   }
 }
 
-Widget imageSection = Container(
-  margin: const EdgeInsets.all(20),
-  child: Center(
-    child: CircleAvatar(
-      radius: 70.0,
-      backgroundImage: AssetImage('images/cat.jpg'),
-    ),
-  ),
-);
+class IntoroduceSection extends StatelessWidget {
+  final introduction;
+  IntoroduceSection(this.introduction);
 
-Widget infoSection = Container(
-  padding: const EdgeInsets.all(12),
-  child: Column(
-    children: [
-      RowInfo(tag: '닉네임', val: '냥냥이'),
-      RowInfo(tag: '성별', val: '남성'),
-      RowInfo(tag: '생년월일', val: '2000년 07월 07일'),
-      RowInfo(tag: '지역', val: '서울'),
-      RowInfo(tag: '작가역량', val: '입문'),
-    ],
-  ),
-);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: [
+          Text(
+            '자기소개',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+              padding: const EdgeInsets.all(12),
+              width: 350,
+              height: 150,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Text(introduction),
+              )),
+        ],
+      ),
+    );
+  }
+}
 
-Widget RowInfo({String tag, String val}) {
+class RowInfo extends StatelessWidget {
+  final tag;
+  final val;
+  RowInfo(this.tag, this.val);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: const EdgeInsets.all(15),
+        child: Row(children: [
+          Container(
+            alignment: Alignment.center,
+            width: 140,
+            child: Text(
+              this.tag,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ),
+          Container(
+            width: 140,
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+              color: Colors.grey,
+              width: 1,
+            ))),
+            alignment: Alignment.center,
+            child: Text(
+              this.val,
+              style: TextStyle(fontSize: 15),
+            ),
+          )
+        ], mainAxisAlignment: MainAxisAlignment.spaceEvenly));
+  }
+}
+
+Widget RowInfo1({String tag, String val}) {
   return Container(
       margin: const EdgeInsets.all(15),
       child: Row(children: [
@@ -139,32 +252,6 @@ Widget RowInfo({String tag, String val}) {
         )
       ], mainAxisAlignment: MainAxisAlignment.spaceEvenly));
 }
-
-Widget intoroduceSection = Container(
-  padding: const EdgeInsets.all(12),
-  child: Column(
-    children: [
-      Text(
-        '자기소개',
-        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-      ),
-      SizedBox(
-        width: 10,
-      ),
-      Container(
-          height: 150,
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 1,
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: Text(
-                '냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥냐아옹냥옹냥냥우앙엥'),
-          )),
-    ],
-  ),
-);
 
 void showMessage(String test) {
   print(test);

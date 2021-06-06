@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/user.dart';
 import 'package:pencilwith/models/newbie.dart';
+import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/subpages/loginpages/googlelogin.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
@@ -84,6 +85,29 @@ class _MyAppState extends State<MyApp> {
               ),
               _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
               _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
+              GestureDetector(
+                onTap: () {
+                  Get.off(MainPage());
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey,
+                  ),
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  width: double.infinity,
+                  height: 60,
+                  child: Center(
+                    child: Text(
+                      '동의 후 계속',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                      textScaleFactor: 1.5,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ));
