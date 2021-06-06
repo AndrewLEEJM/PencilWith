@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pencilwith/main.dart';
+import 'package:pencilwith/pages/profile/editprofile.dart';
 import 'package:pencilwith/pages/profile/manuscript.dart';
 
 import '../main.dart';
@@ -63,7 +64,8 @@ class _ProfileState extends State<ProfilePage> {
                 title: Text('프로필 편집'),
                 onTap: () {
                   // This line code will close drawer programatically....
-                  Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => EditProfile()));
                 },
               ),
               ListTile(

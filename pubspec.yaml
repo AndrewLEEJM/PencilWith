@@ -41,6 +41,7 @@ dependencies:
   kakao_flutter_sdk: ^0.5.4
   http: ^0.12.2
   fluttertoast: ^6.0.0
+  image_picker: ^0.6.7+22
 
   google_sign_in: ^4.5.9
   firebase_auth: ^0.20.1
