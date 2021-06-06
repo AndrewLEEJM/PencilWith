@@ -7,6 +7,7 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/allproject.dart';
+import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/noteobject.dart';
 import 'package:pencilwith/models/postitmodel.dart';
@@ -28,11 +29,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Controller _controller = Get.put(Controller());
-  DBHelper dbHelper = DBHelper();
+
+  DBHelper dbHelper;
+  var db;
+
   //나중에 정리
   // List<SaveNotes> aList = [];
-
-  List<NoteObject> allNoteList = [];
+  // List<NoteObject> allNoteList = [];
 
   List<Map<String, dynamic>> projectList = [];
 
@@ -45,6 +48,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     //project 전체 list call
+    dbHelper = DBHelper();
+    db = dbHelper.initDatabase();
     _callBackServer(apiNames.callAllProject);
     _tabController = new TabController(length: 3, vsync: this);
     super.initState();
@@ -94,6 +99,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 onTap: () {
                   _callBackServer(apiNames.callEachProject,
                       index: '${element['projectId'].toString()}');
+
+                  Get.find<Controller>().chapterListClear();
+                  //챕터 부르기
+                  _makingChapterList(element['projectId'].toString());
                   Navigator.pop(context);
                 },
                 onLongPress: () {
@@ -119,15 +128,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     );
   }
 
-  //call notes
-  _callDatabase(String index) {
-    final db = dbHelper.initDatabase();
-    db.then((value) {
-      final _noteList = dbHelper.getNotes(index);
+  // 해당 프로젝트에 관련된 모든 노트 조회
+  _callDatabaseNoteList(String projectId) {
+    Get.find<Controller>().noteListClear();
+    db.then((database) {
+      final _noteList = dbHelper.getNotes(projectId);
       _noteList.then((note) {
         note.forEach((e) {
-          allNoteList.add(NoteObject.fromJson(e));
+          Get.find<Controller>().insertAllNoteList(NoteObject.fromJson(e));
         });
+        Get.find<Controller>().splitList();
+        //Get.find<Controller>().makingGridList2();
       });
     });
   }
@@ -201,18 +212,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 );
                               } else if (selectedPageIndex == 1) {
                                 return GestureDetector(
-                                    child: Text('DB저장'),
+                                    child: Text('배포'),
                                     onTap: () {
-                                      print('save');
-                                      Get.find<Controller>().saveInCtl();
+//                                      Get.find<Controller>().saveInCtl();
                                     });
                               } else if (selectedPageIndex == 2) {
-                                // print(
-                                //     '2selectedIndex : ${getc.selectedIndex.value}');
                                 return GestureDetector(
                                     child: Text('테스트'),
                                     onTap: () {
-                                      print('save');
                                       //getShowBottom();
                                     });
                               } else {
@@ -258,7 +265,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           GestureDetector(
             onHorizontalDragEnd: (DragEndDetails details) {
               if (details.primaryVelocity > 0) {
-                print(details.primaryVelocity);
                 if (selectedPageIndex != 0) {
                   setState(() {
                     selectedPageIndex--;
@@ -433,7 +439,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ProjectBaby newProject = ProjectBaby.fromJson(
               json.decode(utf8.decode(response.bodyBytes)));
           Get.find<Controller>().changeProject(newProject);
-          _callDatabase(index);
+          await _callDatabaseNoteList(index);
         } else {
           throw Exception('프로젝트 개별 리스트 조회 에러');
         }
@@ -475,14 +481,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           //조회리스트 변경해주는 부분
           _callBackServer(apiNames.callAllProject);
           _textEditingModalController.clear();
-          print('insert project complete');
         } else {
-          print(response.statusCode);
           throw Exception('프로젝트 생성 에러');
         }
         break;
       default:
         break;
     }
+  }
+
+  void _makingChapterList(String projectId) {
+    Get.find<Controller>().chapterListClear();
+    db.then((database) {
+      final _chapterList = dbHelper.getChapter(projectId);
+      _chapterList.then((note) {
+        note.forEach((e) {
+          Get.find<Controller>()
+              .insertAllChapterList(ChapterObject.fromJson(e));
+        });
+      });
+    });
   }
 }

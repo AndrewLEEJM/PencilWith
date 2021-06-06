@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "495817733850",
+    "project_id": "pencilwithlogin-fbfc2",
+    "storage_bucket": "pencilwithlogin-fbfc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:495817733850:android:db0114183e7718d0d757e3",
+        "android_client_info": {
+          "package_name": "com.project.pencilwith"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "495817733850-ohomnlhop3psue5lo32in6fomi7f6jkq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.pencilwith",
+            "certificate_hash": "bbdf6449764dd81f3fe2b2c6bec9c881305beaa2"
+          }
+        },
+        {
+          "client_id": "495817733850-47qfd3p5bl6avht0omg309ujo1uru1n9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaTova71XF5zBwyFGHih2LqFYIzoARX1I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "495817733850-47qfd3p5bl6avht0omg309ujo1uru1n9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

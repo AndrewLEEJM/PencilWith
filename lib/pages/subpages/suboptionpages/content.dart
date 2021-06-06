@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:keyboard_actions/keyboard_actions.dart';
+import 'package:pencilwith/DBHelper/dbhelper.dart';
+import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
+import 'package:pencilwith/values/commonfunction.dart';
 
 //This could be StatelessWidget but it won't work on Dialogs for now until this issue is fixed: https://github.com/flutter/flutter/issues/45839
 class Content extends StatefulWidget {
   final bool isDialog;
+  final textTitleController;
 
-  const Content({Key key, this.isDialog = false}) : super(key: key);
+  const Content(this.textTitleController, {Key key, this.isDialog = false})
+      : super(key: key);
 
   @override
-  _ContentState createState() => _ContentState();
+  _ContentState createState() => _ContentState(textTitleController);
 }
 
 class _ContentState extends State<Content> {
   final FocusNode _nodeText2 = FocusNode();
+  final textTitleCtl;
+
+  DBHelper dbHelper;
+  var db;
+
+  _ContentState(this.textTitleCtl);
+
   TextEditingController _textEditingController = TextEditingController();
   Controller getc = Get.put(Controller());
 
@@ -69,14 +82,56 @@ class _ContentState extends State<Content> {
                                 offset:
                                     int.parse(getc.textIndex.value.toString()) +
                                         1)),
-                    // IconButton(
-                    //     icon: Icon(Icons.add),
-                    //     onPressed: () async {
-                    //       var selection = _textEditingController.selection;
-                    //       createAlertDialog(context).then((value) {
-                    //         _prefixTextSelection('\n[$value]\n', selection);
-                    //       });
-                    //     }),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    GestureDetector(
+                      child: Text('저장'),
+                      onTap: () {
+                        if (Get.find<Controller>()
+                                .currentProject
+                                .value
+                                .projectId ==
+                            null) {
+                          Get.snackbar('프로젝트 선택', '작업하실 프로젝트를 먼저 선택해주세요.',
+                              snackPosition: SnackPosition.TOP);
+                        } else {
+                          db.then((database) {
+                            final _dateFormatter = DateFormat('yyyyMMdd');
+                            int rowCount = 0;
+                            dbHelper
+                                .getAllCount(Get.find<Controller>()
+                                    .currentProject
+                                    .value
+                                    .projectId
+                                    .toString())
+                                .then((value) {
+                              print(value);
+                              rowCount = value + 1;
+
+                              ChapterObject ii = ChapterObject(
+                                  id:
+                                      '${Get.find<Controller>().currentProject.value.projectId}',
+                                  idx: rowCount.toString(),
+                                  title: '${textTitleCtl.text.toString()}',
+                                  content:
+                                      '${_textEditingController.text.toString()}',
+                                  date:
+                                      '${_dateFormatter.format(DateTime.now())}');
+                              dbHelper.insertChapter(ii).then((value) {
+                                //TODO 챕터 리스트 만들고
+
+                                _makingChapterList(Get.find<Controller>()
+                                    .currentProject
+                                    .value
+                                    .projectId
+                                    .toString());
+                              });
+                            });
+                          });
+                        }
+                      },
+                    ),
                     Spacer(),
                     GestureDetector(
                       child: Row(
@@ -107,18 +162,76 @@ class _ContentState extends State<Content> {
                                                       .viewInsets
                                                       .bottom -
                                                   50),
-                                          child: ListView.builder(
-                                            itemBuilder: (context, index) {
-                                              return ListTile(
-                                                  onTap: () {},
-                                                  dense: true,
-                                                  title: Text(
-                                                      '${index + 1}.${chapterList[index]}',
-                                                      style: TextStyle(
-                                                          fontSize: 15)));
-                                            },
-                                            itemCount: chapterList.length,
-                                          ),
+                                          child: GetBuilder<Controller>(
+                                              init: Controller(),
+                                              builder: (controller) {
+                                                return ListView.builder(
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return ListTile(
+                                                      onTap: () {
+                                                        _getEachChapterSqlflite(
+                                                            Get.find<
+                                                                    Controller>()
+                                                                .chapterRealList[
+                                                                    index]
+                                                                .id,
+                                                            Get.find<
+                                                                    Controller>()
+                                                                .chapterRealList[
+                                                                    index]
+                                                                .idx);
+                                                      },
+                                                      // onLongPress: () {
+
+                                                      dense: true,
+                                                      title: Text(
+                                                          '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}',
+                                                          style: TextStyle(
+                                                              fontSize: 15)),
+                                                      trailing: TextButton(
+                                                        onPressed: () {
+                                                          db.then((database) {
+                                                            dbHelper
+                                                                .deleteEachChapter(
+                                                                    Get.find<
+                                                                            Controller>()
+                                                                        .chapterRealList[
+                                                                            index]
+                                                                        .id,
+                                                                    Get.find<
+                                                                            Controller>()
+                                                                        .chapterRealList[
+                                                                            index]
+                                                                        .idx)
+                                                                .then((value) {
+                                                              _makingChapterList(Get
+                                                                      .find<
+                                                                          Controller>()
+                                                                  .chapterRealList[
+                                                                      index]
+                                                                  .id);
+                                                            });
+                                                          });
+                                                          // closedKeyboard(
+                                                          //     context);
+                                                          // Get.back();
+                                                          // deleteChapterDialog(
+                                                          //     context,
+                                                          //     Get.find<Controller>()
+                                                          //             .chapterRealList[
+                                                          //         index]);
+                                                        },
+                                                        child: Text('DEL'),
+                                                      ),
+                                                    );
+                                                  },
+                                                  itemCount:
+                                                      Get.find<Controller>()
+                                                          .chapterRealList
+                                                          .length,
+                                                );
+                                              }),
                                         ),
                                         height: 500,
                                       ),
@@ -151,6 +264,10 @@ class _ContentState extends State<Content> {
       Get.find<Controller>().textIndex.value =
           int.parse(_textEditingController.selection.base.offset.toString());
     });
+    dbHelper = DBHelper();
+    db = dbHelper.initDatabase();
+    _makingChapterList(
+        Get.find<Controller>().currentProject.value.projectId.toString());
     super.initState();
   }
 
@@ -198,7 +315,7 @@ class _ContentState extends State<Content> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('chater1'),
+            title: Text('Chater1'),
             content: TextField(
               controller: _textEditingModalController,
             ),
@@ -208,7 +325,84 @@ class _ContentState extends State<Content> {
                   Navigator.of(context)
                       .pop(_textEditingModalController.text.toString());
                 },
-                child: Text('submit'),
+                child: Text('Submit'),
+              )
+            ],
+          );
+        });
+  }
+
+  void _makingChapterList(String projectId) {
+    Get.find<Controller>().chapterListClear();
+    db.then((database) {
+      final _chapterList = dbHelper.getChapter(projectId);
+      _chapterList.then((note) {
+        note.forEach((e) {
+          Get.find<Controller>()
+              .insertAllChapterList(ChapterObject.fromJson(e));
+        });
+      });
+    });
+  }
+
+  void _insertChapterApi(String title, String id) {
+    // print(int.parse(id));
+    //
+    // db.then((database) {
+    //   final _chapterList = dbHelper.insertChapter(ChapterObject(
+    //     id: ,content: ,
+    //   ));
+    //   _chapterList.then((note) {
+    //     note.forEach((e) {
+    //       Get.find<Controller>()
+    //           .insertAllChapterList(ChapterObject.fromJson(e));
+    //     });
+    //   });
+    // });
+  }
+
+  void _getEachChapterSqlflite(String id, String idx) {
+    db.then((database) {
+      final _chapterEachList = dbHelper.getEachChapter(id, idx);
+      _chapterEachList.then((chapter) {
+        widget.textTitleController.text = chapter.first['title'];
+        _textEditingController.text = chapter.first['content'];
+        Get.back();
+      });
+    });
+  }
+
+  Future<String> deleteChapterDialog(
+      BuildContext context, ChapterObject chapter) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Text('해당 챕터를 삭제하시겠습니까?'),
+            content: Text('chapter no : ${chapter.id}\n'
+                'chapter name : ${chapter.title}'),
+            actions: <Widget>[
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('취소'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  db.then((database) {
+                    dbHelper
+                        .deleteEachChapter(chapter.id, chapter.idx)
+                        .then((value) {
+                      _makingChapterList(chapter.id.toString());
+                    });
+                  });
+
+                  Navigator.of(context).pop();
+                },
+                child: Text('삭제', style: TextStyle(color: Colors.red)),
               )
             ],
           );
