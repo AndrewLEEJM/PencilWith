@@ -25,8 +25,6 @@ class _EditProfileState extends State<EditProfile> {
     final image = await ImagePicker.pickImage(source: ImageSource.gallery);
     var url =
         'https://pencil-with.com/api/my/user/${prefs.getString('UserID')}/profileImage';
-    print('gdgdgd');
-    print(image);
     FormData formdata = new FormData({'image': image});
 
     var response = await http.put(url,
