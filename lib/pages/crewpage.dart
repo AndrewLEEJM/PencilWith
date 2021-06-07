@@ -209,16 +209,11 @@ class _CrewPageState extends State<CrewPage> {
               color: Color(0xffE5E5E5),
               margin: EdgeInsets.only(top: 8),
             ),
-<<<<<<< HEAD
             if(testing == 1)...{noOne()}
             else...{
               rectInfo(),
               rectBtn,
             },
-=======
-            if(testing == false)...{noOne()}
-            else...{rectInfo()},
->>>>>>> parent of efac369 (crewpage0607)
           ],
         ),
     );
