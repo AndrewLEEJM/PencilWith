@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/user.dart';
@@ -11,6 +12,7 @@ import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/subpages/loginpages/googlelogin.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
+import 'package:pencilwith/values/bottom_value.dart';
 import 'package:pencilwith/values/commonfunction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,6 +36,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _loadLocalJwtToken();
     _initKakaoTalkInstalled();
     super.initState();
@@ -62,6 +65,7 @@ class _MyAppState extends State<MyApp> {
     deviceRatio = deviceWidth / deviceHeight;
 
     return Scaffold(
+        backgroundColor: backgroundColor,
         resizeToAvoidBottomPadding: false,
         body: SafeArea(
           child: Column(
@@ -69,23 +73,29 @@ class _MyAppState extends State<MyApp> {
             children: [
               Row(),
               Container(
-                color: Colors.grey[400],
-                child: Center(
-                  child: Text(
-                    '로고',
-                    style: TextStyle(
-                        fontSize: deviceWidth * 0.05,
-                        fontWeight: FontWeight.bold),
-                  ),
+                //color: Colors.grey[400],
+                child: SvgPicture.asset(
+                  'images/pencilwithlogo.svg',
+                  color: Colors.white,
                 ),
+
+                // Center(
+                //   child: Text(
+                //     '로고',
+                //     style: TextStyle(
+                //         fontSize: deviceWidth * 0.05,
+                //         fontWeight: FontWeight.bold),
+                //   ),
+                // ),
                 width: deviceWidth * 0.7,
                 height: deviceWidth * deviceRatio,
               ),
               SizedBox(
                 height: 100,
               ),
-              _loginButton('구글', deviceWidth, Colors.blue[900], Colors.white),
-              _loginButton('카카오', deviceWidth, Colors.yellow, Colors.black),
+              _loginButton(
+                  'Google 로그인', deviceWidth, Colors.white, Colors.grey[600]),
+              _loginButton('카카오 로그인', deviceWidth, Colors.yellow, Colors.black),
             ],
           ),
         ));
@@ -98,16 +108,10 @@ class _MyAppState extends State<MyApp> {
   Widget _loginButton(
       String vendor, double _deviceWidth, Color color, Color textColor) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: color,
-        ),
-        child: OutlineButton(
-          onPressed: () {
-            print('$vendor 로그인~');
-            if (vendor == '카카오') {
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: GestureDetector(
+          onTap: () {
+            if (vendor == '카카오 로그인') {
               if (_isKakaoTalkInstalled) {
                 _loginWithTalk();
               } else {
@@ -115,21 +119,75 @@ class _MyAppState extends State<MyApp> {
               }
             } else {
               Get.off(() => GoogleLogin());
-              //_moveNextPage();
             }
           },
-          child: Text(
-            '$vendor 로그인',
-            style: TextStyle(
-                fontSize: _deviceWidth * 0.06,
-                color: textColor,
-                fontWeight: FontWeight.bold),
+          child: Card(
+            color: color,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            elevation: 3,
+            child: Container(
+                height: 50,
+                width: _deviceWidth * 0.90,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: vendor == 'Google 로그인'
+                              ? SvgPicture.asset('images/googlelogo.svg')
+                              : Image.asset(
+                                  'images/k2.png',
+                                  height: 30,
+                                )),
+                    ),
+                    Align(
+                      child: Text(
+                        '$vendor',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: textColor),
+                      ),
+                      alignment: Alignment.center,
+                    )
+                  ],
+                )),
           ),
-        ),
-        width: _deviceWidth * 0.7,
-        height: 60,
-      ),
-    );
+        )
+
+        // Container(
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(5),
+        //     color: color,
+        //   ),
+        //   child: OutlineButton(
+        //     onPressed: () {
+        //       print('$vendor 로그인~');
+        //       if (vendor == '카카오') {
+        //         if (_isKakaoTalkInstalled) {
+        //           _loginWithTalk();
+        //         } else {
+        //           _loginWithKakao();
+        //         }
+        //       } else {
+        //         Get.off(() => GoogleLogin());
+        //       }
+        //     },
+        //     child: Text(
+        //       '$vendor 로그인',
+        //       style: TextStyle(
+        //           fontSize: _deviceWidth * 0.06,
+        //           color: textColor,
+        //           fontWeight: FontWeight.bold),
+        //     ),
+        //   ),
+        //   width: _deviceWidth * 0.7,
+        //   height: 60,
+        // ),
+
+        );
   }
 
   _issueAccessToken(String authCode) async {
@@ -197,6 +255,7 @@ class _MyAppState extends State<MyApp> {
       if (signinObject.body.registered) {
         prefs.setString('JwtToken', signinObject.body.jwtToken.toString());
         prefs.setString('Div', 'kakao');
+        prefs.setString('UserID', signinObject.body.userId);
         Get.off(() => MainPage());
       } else {
         Get.off(() => TermsPage());

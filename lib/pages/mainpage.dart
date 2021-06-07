@@ -1,11 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:pencilwith/models/getxcontroller.dart';
+import 'package:pencilwith/models/userprofile.dart';
 import 'package:pencilwith/values/bottom_value.dart';
 import 'package:pencilwith/pages/crewpage.dart';
 import 'package:pencilwith/pages/homepage.dart';
 import 'package:pencilwith/pages/profilepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:http/http.dart' as http;
 
 //TODO JWTTOKEN 유효성을 확인 로직이 필요할것 같다.
 
@@ -19,12 +25,42 @@ class _MainPageState extends State<MainPage> {
 
   int selectedIndex = 0;
   FlutterToast flutterToast;
+  Controller _controller = Get.put(Controller());
 
   @override
   void initState() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     flutterToast = FlutterToast(context);
+    _callProfile(prefs.getString('UserID'));
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  Future<void> _callProfile(String userId) async {
+    print(userId);
+    var url = 'https://pencil-with.com/api/my/user/' + userId;
+    var response = await http.get(
+      url,
+      headers: {
+        'Content-type': 'application/json ; charset=utf-8',
+        'Authorization': prefs.getString('JwtToken')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('response.body.toString()');
+      print(response.body.toString());
+
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      UserProfile uu = UserProfile.fromJson(jsonResponse);
+      Get.find<Controller>().insertProfile(uu);
+    } else {
+      throw Exception('${response.statusCode}');
+    }
   }
 
   @override

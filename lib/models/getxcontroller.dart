@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/noteobject.dart';
-import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/projectclass.dart';
+import 'package:pencilwith/models/userprofile.dart';
 
 class Controller extends GetxController {
   //tab page index
@@ -14,14 +14,14 @@ class Controller extends GetxController {
   var textIndex = 0.obs;
   var maxTextCount = 0.obs;
 
-  //var selectProject = "Project".obs;
-
-  //var selectProjectInfo = ProjectInfo('0', 'Project', 'My').obs;
-
-  //신규프로젝트 리스트를 들고있고
-
-  //var projectBaby = ProjectBaby().obs;
   var currentProject = ProjectBaby().obs;
+
+  var userProfile = UserProfile();
+
+  void insertProfile(UserProfile userProfile) {
+    this.userProfile = userProfile;
+    update();
+  }
 
   void changeProject(ProjectBaby selectProject) {
     this.currentProject(selectProject);

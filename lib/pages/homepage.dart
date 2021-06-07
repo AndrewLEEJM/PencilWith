@@ -10,10 +10,8 @@ import 'package:pencilwith/models/allproject.dart';
 import 'package:pencilwith/models/chapterobject.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/noteobject.dart';
-import 'package:pencilwith/models/postitmodel.dart';
 import 'package:pencilwith/models/projectclass.dart';
 import 'package:pencilwith/models/savenotes.dart';
-import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:pencilwith/pages/subpages/feedback.dart';
 import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/newwritepage.dart';
@@ -34,12 +32,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   DBHelper dbHelper;
   var db;
 
-  //SharedPreferences prefs;
-
-  //나중에 정리
-  // List<SaveNotes> aList = [];
-  // List<NoteObject> allNoteList = [];
-
   List<Map<String, dynamic>> projectList = [];
 
   final TextEditingController _textEditingModalController =
@@ -55,6 +47,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     db = dbHelper.initDatabase();
     _callBackServer(apiNames.callAllProject);
     _tabController = new TabController(length: 3, vsync: this);
+
+    print(prefs.getString('JwtToken'));
+
     super.initState();
   }
 
@@ -294,11 +289,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   maintainState: true,
                   visible: selectedPageIndex == 1,
                 ),
-                // Visibility(
-                //   child: WritePage(aList == null ? [] : aList),
-                //   maintainState: true,
-                //   visible: selectedPageIndex == 1,
-                // ),
                 Visibility(
                   child: FeedBackPage(),
                   maintainState: true,

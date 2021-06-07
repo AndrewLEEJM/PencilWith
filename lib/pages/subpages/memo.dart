@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:pencilwith/DBHelper/dbhelper.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/noteobject.dart';
-import 'package:pencilwith/models/postitmodel.dart';
-import 'package:pencilwith/models/todolistmodel.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pencilwith/values/bottom_value.dart';

@@ -28,7 +28,6 @@ class GoogleLogin extends StatelessWidget {
         }
         if (snapshot.connectionState == ConnectionState.done) {
           returnGoogleToken().then((value) {
-            //공통변수에 google accesstoken넣고 끝.
             print('google AccessToken : $myAccessToken');
           });
           return Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -40,11 +39,14 @@ class GoogleLogin extends StatelessWidget {
 
   Future<void> returnGoogleToken() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    //공통변수에 accesstoken넣고 끝.
-    myAccessToken = googleAuth.accessToken.toString();
-    _checkSignin();
+    if (googleUser == null) {
+      Get.off(() => MyApp());
+    } else {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      myAccessToken = googleAuth.accessToken.toString();
+      _checkSignin();
+    }
   }
 
   Future<void> _checkSignin() async {
@@ -62,10 +64,13 @@ class GoogleLogin extends StatelessWidget {
       SigninObject signinObject =
           SigninObject.fromJson(json.decode(response.body));
 
+      print(response.body.toString());
+
       if (signinObject.body.registered) {
         //prefs = await SharedPreferences.getInstance();
         prefs.setString('JwtToken', signinObject.body.jwtToken.toString());
         prefs.setString('Div', 'google');
+        prefs.setString('UserID', signinObject.body.userId);
         Get.off(() => MainPage());
       }
       // else if (response.statusCode == 401 || response.statusCode == 400) {

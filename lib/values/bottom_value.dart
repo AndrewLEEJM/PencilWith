@@ -8,4 +8,5 @@ List<IconData> bottomIconData = [
 ];
 
 Color bottomNavigatorColor = Color(0xffF0A8AB);
+Color backgroundColor = Color.fromRGBO(246, 216, 217, 1);
 double mainWidth = 0.0;
