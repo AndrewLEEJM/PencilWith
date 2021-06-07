@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:pencilwith/models/getxcontroller.dart';
 import 'package:pencilwith/models/signupobject.dart';
 import 'package:pencilwith/pages/mainpage.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,8 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  Controller getUser = Get.put(Controller());
+
   String selectedGender;
   String selectedYear;
   String selectedMonth;
@@ -38,7 +41,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController _textEditingController = new TextEditingController();
   TextEditingController _textNickNameController = new TextEditingController();
 
-  DateFormat signinDateFormat = DateFormat('yyyy.MM.dd');
+  DateFormat signinDateFormat = DateFormat('yyyy-MM-dd');
 
   var years = [];
   var months = [];
@@ -59,14 +62,19 @@ class _EditProfileState extends State<EditProfile> {
       }
     }
 
-    selectedGender = 'MALE';
-    selectedYear = '1990';
-    selectedMonth = '2';
-    selectedDay = '1';
-    selectedLocation = '서울';
-    selectedExperience = 'NEWBIE';
-    _textEditingController = new TextEditingController(text: 'gwqgqeg');
-    _textNickNameController = new TextEditingController(text: 'gdgd');
+    var birthArr = getUser.userProfile.birth.split('-');
+    print(birthArr);
+
+    selectedGender = getUser.userProfile.genderType;
+    selectedYear = birthArr[0];
+    selectedMonth = int.tryParse(birthArr[1]).toString();
+    selectedDay = int.tryParse(birthArr[2]).toString();
+    selectedLocation = getUser.userProfile.locationType;
+    selectedExperience = getUser.userProfile.careerType;
+    _textEditingController =
+        new TextEditingController(text: getUser.userProfile.introduction);
+    _textNickNameController =
+        new TextEditingController(text: getUser.userProfile.name);
   }
 
   @override
@@ -86,7 +94,17 @@ class _EditProfileState extends State<EditProfile> {
               Icons.check,
             ),
             onPressed: () {
-              // 저장
+              if (this.selectedYear != null &&
+                  this.selectedExperience != null &&
+                  this.selectedDay != null &&
+                  this.selectedLocation != null &&
+                  this.selectedMonth != null &&
+                  this._textEditingController.text != '') {
+                callSignUp();
+              } else {
+                Get.snackbar('Note', 'Please fill the information',
+                    snackPosition: SnackPosition.BOTTOM);
+              }
             },
           )
         ],
@@ -357,7 +375,8 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> callSignUp() async {
-    var url = 'https://pencil-with.com/api/my/user/id';
+    var url =
+        'https://pencil-with.com/api/my/user/' + prefs.getString('UserID');
 
     final _body = {
       'birth': signinDateFormat.format(DateTime(int.parse(selectedYear),
@@ -369,10 +388,11 @@ class _EditProfileState extends State<EditProfile> {
       'name': _textNickNameController.text
     };
 
-    var response = await http.post(url,
+    var response = await http.put(url,
         headers: {
           'Content-type': 'application/json ; charset=utf-8',
           'Accept': 'application/json ; charset=utf-8',
+          'Authorization': prefs.getString('JwtToken')
         },
         body: jsonEncode(_body));
 
@@ -385,12 +405,8 @@ class _EditProfileState extends State<EditProfile> {
       SignupObject signupObject =
           SignupObject.fromJson(json.decode(response.body));
 
-      print(signupObject.body.registered);
-      print(signupObject.body.jwtToken);
-
       if (signupObject.body.registered) {
-        prefs.setString('JwtToken', signupObject.body.jwtToken);
-        Get.off(() => MainPage());
+        Get.off(() => ProfilePage());
       } else {
         throw Exception('You cannot join us!!');
       }
