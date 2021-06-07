@@ -204,7 +204,7 @@ class CrewPage extends StatefulWidget {
 }
 
 class _CrewPageState extends State<CrewPage> {
-  bool testing =true;
+  var testing =1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -235,7 +235,7 @@ class _CrewPageState extends State<CrewPage> {
               color: Color(0xffE5E5E5),
               margin: EdgeInsets.only(top: 8),
             ),
-            if(testing == false)...{noOne()}
+            if(testing == 1)...{noOne()}
             else...{
               rectInfo(),
               rectBtn,

@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
     return Obx(() => c.width > 0.0
         ? Scaffold(
             //resizeToAvoidBottomInset: true,
-            resizeToAvoidBottomPadding: false,
+            //resizeToAvoidBottomPadding: false,
             body: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

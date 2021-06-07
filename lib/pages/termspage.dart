@@ -27,7 +27,7 @@ class _TermsPageState extends State<TermsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      //resizeToAvoidBottomPadding: false,
       body: Padding(
         padding: const EdgeInsets.only(top: 20.0, left: 25, right: 20),
         child: Column(
