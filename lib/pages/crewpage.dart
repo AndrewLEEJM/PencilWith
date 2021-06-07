@@ -21,30 +21,23 @@ class _ftGenderState extends State<ftGender> {
       margin: EdgeInsets.only(top: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xffE3E3E3)),
         borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          hint: Text('성별',
-          style: TextStyle(
-            color: Color(0xff000000),
-            fontSize: 12,
-            fontFamily: 'Gilroy',
-          ),),
-          value: _selectedValue,
-          items: _valueList.map((value) {
-            return DropdownMenuItem(value: value, child: Text(value));
-          }).toList(),
-          onChanged: (value) {
-            print(value);
-            setState(() {
-              _selectedValue = value;
-            });
-          },
-          iconSize: 0,
-          style: TextStyle(color: Colors.black, fontSize: 12),
-        ),
+      child: DropdownButton(
+        hint: Text('성별'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
       ),
     );
   }
@@ -70,30 +63,23 @@ class _ftAgeState extends State<ftAge> {
       margin: EdgeInsets.only(top: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xffE3E3E3)),
         borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          hint: Text('나이',
-            style: TextStyle(
-              color: Color(0xff000000),
-              fontSize: 12,
-              fontFamily: 'Gilroy',
-            ),),
-          value: _selectedValue,
-          items: _valueList.map((value) {
-            return DropdownMenuItem(value: value, child: Text(value));
-          }).toList(),
-          onChanged: (value) {
-            print(value);
-            setState(() {
-              _selectedValue = value;
-            });
-          },
-          iconSize: 0,
-          style: TextStyle(color: Colors.black, fontSize: 12),
-        ),
+      child: DropdownButton(
+        hint: Text('나이'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
       ),
     );
   }
@@ -119,30 +105,23 @@ class _ftAuthorState extends State<ftAuthor> {
       margin: EdgeInsets.only(top: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xffE3E3E3)),
         borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          hint: Text('작가',
-            style: TextStyle(
-              color: Color(0xff000000),
-              fontSize: 12,
-              fontFamily: 'Gilroy',
-            ),),
-          value: _selectedValue,
-          items: _valueList.map((value) {
-            return DropdownMenuItem(value: value, child: Text(value));
-          }).toList(),
-          onChanged: (value) {
-            print(value);
-            setState(() {
-              _selectedValue = value;
-            });
-          },
-          iconSize: 0,
-          style: TextStyle(color: Colors.black, fontSize: 12),
-        ),
+      child: DropdownButton(
+        hint: Text('작가'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
       ),
     );
   }
@@ -168,30 +147,23 @@ class _ftCareerState extends State<ftCareer> {
       margin: EdgeInsets.only(top: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xffE3E3E3)),
         borderRadius: BorderRadius.all(Radius.circular(5)),
+        color: Color(0xffE3E3E3),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-          hint: Text('경력',
-            style: TextStyle(
-              color: Color(0xff000000),
-              fontSize: 12,
-              fontFamily: 'Gilroy',
-            ),),
-          value: _selectedValue,
-          items: _valueList.map((value) {
-            return DropdownMenuItem(value: value, child: Text(value));
-          }).toList(),
-          onChanged: (value) {
-            print(value);
-            setState(() {
-              _selectedValue = value;
-            });
-          },
-          iconSize: 0,
-          style: TextStyle(color: Colors.black, fontSize: 12),
-        ),
+      child: DropdownButton(
+        hint: Text('경력'),
+        value: _selectedValue,
+        items: _valueList.map((value) {
+          return DropdownMenuItem(value: value, child: Text(value));
+        }).toList(),
+        onChanged: (value) {
+          print(value);
+          setState(() {
+            _selectedValue = value;
+          });
+        },
+        iconSize: 0,
+        style: TextStyle(color: Colors.black, fontSize: 12),
       ),
     );
   }
@@ -213,6 +185,8 @@ class _CrewPageState extends State<CrewPage> {
             style: TextStyle(
               color: Colors.black,
               fontSize: 14,
+              fontWeight: FontWeight.w400,
+              //fontFamily: ,
           ),
           ),
           centerTitle: true,
@@ -235,11 +209,16 @@ class _CrewPageState extends State<CrewPage> {
               color: Color(0xffE5E5E5),
               margin: EdgeInsets.only(top: 8),
             ),
+<<<<<<< HEAD
             if(testing == 1)...{noOne()}
             else...{
               rectInfo(),
               rectBtn,
             },
+=======
+            if(testing == false)...{noOne()}
+            else...{rectInfo()},
+>>>>>>> parent of efac369 (crewpage0607)
           ],
         ),
     );
@@ -266,12 +245,14 @@ class noOne extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(24, 20, 40, 17),
+            padding: EdgeInsets.fromLTRB(24, 20, 40, 0),
             child: Text(
               '크루를 모집 중인 작가분이 현재 없습니다ㅠㅠ\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
+                fontWeight: FontWeight.w400,
+                //fontFamily: ,
               ),
             ),
           ),
@@ -294,8 +275,9 @@ var rectBtn= ElevatedButton(
     primary: Color(0xffF0A8AB),
     textStyle: TextStyle(
       color: Colors.white,
-      fontFamily: 'ABeeZee',
-      fontStyle: FontStyle.italic,
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      //fontFamily: ,
     ),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))
   ),
@@ -319,7 +301,7 @@ class _rectInfoState extends State<rectInfo> {
     return Container(
       width: 325,
       height: 152,
-      margin: EdgeInsets.only(top: 8),
+      margin: EdgeInsets.only(top: 25),
       decoration: BoxDecoration(
           border: Border.all(
             width: 1,
@@ -356,6 +338,7 @@ class _rectInfoState extends State<rectInfo> {
                     margin: EdgeInsets.fromLTRB(14, 0, 0, 0),
                       child: Text('닉네임',
                       style: TextStyle(
+                        fontWeight: FontWeight.w400,
                         fontSize: 12,
                         color: Color(0xffA1A1A1),
                       ),)),
@@ -369,9 +352,9 @@ class _rectInfoState extends State<rectInfo> {
                   },
                   child: Text('신고',
                   style: TextStyle(
+                    fontWeight: FontWeight.w400,
                     fontSize: 10,
                     color: Colors.black,
-                    fontFamily: 'NotoSansCJKkr'
                   ),),
                 ),
               ),
@@ -391,6 +374,7 @@ class _rectInfoState extends State<rectInfo> {
                 margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
                 child: Text('모집인원',
                       style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Color(0xff717171),
                       ),
@@ -399,7 +383,6 @@ class _rectInfoState extends State<rectInfo> {
               Text('00명',
                 style: TextStyle(
                 fontSize: 12,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -418,6 +401,7 @@ class _rectInfoState extends State<rectInfo> {
                 margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
                 child: Text('집필기간',
                   style: TextStyle(
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Color(0xff717171),
                   ),),
@@ -425,7 +409,6 @@ class _rectInfoState extends State<rectInfo> {
               Text('~~~~',
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w500,
                 ),),
             ],
           ),
@@ -443,6 +426,7 @@ class _rectInfoState extends State<rectInfo> {
                 margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
                 child: Text('장       르',
                   style: TextStyle(
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: Color(0xff717171),
                   ),),
@@ -450,7 +434,6 @@ class _rectInfoState extends State<rectInfo> {
               Text('0000',
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight: FontWeight.w500,
                 ),),
             ],
           ),
@@ -459,6 +442,7 @@ class _rectInfoState extends State<rectInfo> {
     );
   }
 }
+
 
 //크루 모집 창
 class recruitment extends StatefulWidget {
@@ -518,6 +502,7 @@ class _recruitmentState extends State<recruitment> {
                       margin: EdgeInsets.fromLTRB(4, 8, 60, 0),
                       child: Text('모집인원',
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xff717171),
                         ),
@@ -546,6 +531,7 @@ class _recruitmentState extends State<recruitment> {
                       margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
                       child: Text('집필기간',
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xff717171),
                         ),),
@@ -572,6 +558,7 @@ class _recruitmentState extends State<recruitment> {
                       margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
                       child: Text('장       르',
                         style: TextStyle(
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Color(0xff717171),
                         ),),
