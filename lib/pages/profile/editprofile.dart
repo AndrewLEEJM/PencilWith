@@ -23,6 +23,19 @@ class _EditProfileState extends State<EditProfile> {
 
   Future getImage() async {
     final image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    var url =
+        'https://pencil-with.com/api/my/user/${prefs.getString('UserID')}/profileImage';
+    print('gdgdgd');
+    print(image);
+    FormData formdata = new FormData({'image': image});
+
+    var response = await http.put(url,
+        headers: {
+          'Content-type': 'multipart/form-data',
+          'Accept': 'application/json ; charset=utf-8',
+          'Authorization': prefs.getString('JwtToken')
+        },
+        body: formdata);
 
     setState(() {
       _image = image;
@@ -121,13 +134,13 @@ class _EditProfileState extends State<EditProfile> {
                 child: _image == null
                     ? CircleAvatar(
                         radius: 70.0,
-                        backgroundImage: AssetImage('images/cat.jpg'),
+                        backgroundImage:
+                            NetworkImage('${getUser.userProfile.profileImage}'),
                       )
                     : CircleAvatar(radius: 70.0, child: Image.file(_image)),
               ),
             ),
           ),
-
           Row(children: <Widget>[
             Title(title: '닉네임'),
             Expanded(
@@ -328,47 +341,6 @@ class _EditProfileState extends State<EditProfile> {
           SizedBox(
             height: 50,
           ),
-          // GestureDetector(
-          //   onTap: () {
-          //     if (this._textNickNameController.text != '' &&
-          //         this.selectedYear != null &&
-          //         this.selectedExperience != null &&
-          //         this.selectedDay != null &&
-          //         this.selectedLocation != null &&
-          //         this.selectedMonth != null) {
-          //       callSignUp();
-
-          //       print('selectedYear:$selectedYear');
-          //       print('selectedMonth:$selectedMonth');
-          //       print('selectedDay:$selectedDay');
-          //       print('selectedExperience:$selectedExperience');
-          //       print('selectedLocation:$selectedLocation');
-
-          //       // Get.off(MainPage());
-          //     } else {
-          //       Get.snackbar('Note', 'Please fill the information',
-          //           snackPosition: SnackPosition.BOTTOM);
-          //     }
-          //   },
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(10),
-          //       color: Colors.grey,
-          //     ),
-          //     margin: EdgeInsets.symmetric(horizontal: 20),
-          //     width: double.infinity,
-          //     height: 60,
-          //     child: Center(
-          //       child: Text(
-          //         '가입하기',
-          //         style: TextStyle(
-          //           color: Colors.white,
-          //         ),
-          //         textScaleFactor: 1.5,
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );
