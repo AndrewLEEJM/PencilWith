@@ -6,11 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:kakao_flutter_sdk/user.dart';
-import 'package:pencilwith/models/newbie.dart';
+import 'package:pencilwith/models/signinobject.dart';
+import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/subpages/loginpages/googlelogin.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(GetMaterialApp(
       builder: (context, child) {
@@ -32,8 +34,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    super.initState();
+    _loadLocalJwtToken();
     _initKakaoTalkInstalled();
+    super.initState();
   }
 
   @override
@@ -135,11 +138,10 @@ class _MyAppState extends State<MyApp> {
       AccessTokenStore.instance
           .toStore(token)
           .then((value) => print(value.accessToken));
-      //print('accessToken:${token.accessToken.toString()}');
-      _getCheckSignUP(token.accessToken.toString());
-      //_moveNextPage();
+      myAccessToken = token.accessToken.toString();
+      _checkSignin();
     } catch (e) {
-      print("error on issuing access token: $e");
+      print("access token error : $e");
     }
   }
 
@@ -181,25 +183,44 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  Future<void> _getCheckSignUP(String accessToken) async {
+  Future<void> _checkSignin() async {
     var url = 'https://pencil-with.com/api/auth/kakao/authentication';
     var response = await http.post(url,
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-type': 'application/json ; charset=utf-8',
         },
-        body: '${accessToken.toString()}');
+        body: '$myAccessToken');
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      Newbie nb = Newbie.fromJson(jsonResponse);
-      if (nb.body.registered) {
-        //TODO : JWTtoken(nb.body.jwtToken)을 받아서, 진행
-
+      SigninObject signinObject = SigninObject.fromJson(jsonResponse);
+      if (signinObject.body.registered) {
+        prefs.setString('JwtToken', signinObject.body.jwtToken.toString());
+        prefs.setString('Div', 'kakao');
+        Get.off(() => MainPage());
       } else {
-        _moveNextPage();
+        Get.off(() => TermsPage());
       }
-    } else {
-      print('이건 서버문제야 확실해');
+    }
+    // else if (response.statusCode == 401 || response.statusCode == 400) {
+    //   prefs.setString('JwtToken', null);
+    //   prefs.setString('Div', null);
+    //   Get.off(() => MyApp());
+    // }
+    else {
+      throw Exception('Server Error');
+    }
+  }
+
+  _loadLocalJwtToken() async {
+    prefs = await SharedPreferences.getInstance();
+    if ((prefs.getString('JwtToken')?.length ?? 0) != 0) {
+      Get.off(() => MainPage());
+      // if (prefs.getString('Div') == 'google') {
+      //   Get.off(() => MainPage());
+      // } else if (prefs.getString('Div') == 'kakao') {
+      //   Get.off(() => MainPage());
+      // }
     }
   }
 }

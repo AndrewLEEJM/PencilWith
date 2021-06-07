@@ -18,6 +18,7 @@ import 'package:pencilwith/pages/subpages/feedback.dart';
 import 'package:pencilwith/pages/subpages/memo.dart';
 import 'package:pencilwith/pages/subpages/newwritepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_sheet/top_sheet.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,6 +33,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   DBHelper dbHelper;
   var db;
+
+  //SharedPreferences prefs;
 
   //나중에 정리
   // List<SaveNotes> aList = [];
@@ -383,6 +386,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Future<void> _callBackServer(apiNames request, {String index}) async {
+    //prefs = await SharedPreferences.getInstance();
+
     String url;
     String method;
     String contextType = 'application/json ; charset=utf-8';
@@ -396,7 +401,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           headers: {
             'Content-type': contextType,
             'Accept': contextType,
-            'Authorization': jwtToken
+            //'Authorization': jwtToken
+            'Authorization': prefs.getString('JwtToken')
           },
         );
         if (response.statusCode == 200) {
@@ -429,7 +435,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           headers: {
             'Content-type': contextType,
             'Accept': contextType,
-            'Authorization': jwtToken
+            'Authorization': prefs.getString('JwtToken')
           },
         );
         if (response.statusCode == 200) {
@@ -446,7 +452,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         url = 'https://pencil-with.com/api/projects/$index';
         response = await http.delete(
           url,
-          headers: {'Content-type': contextType, 'Authorization': jwtToken},
+          headers: {
+            'Content-type': contextType,
+            'Authorization': prefs.getString('JwtToken')
+          },
         );
         if (response.statusCode == 200) {
           Get.snackbar('삭제완료 안내', '삭제가 완료되었습니다.',
@@ -464,7 +473,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         response = await http.post(url,
             headers: {
               "Content-Type": "application/json",
-              'Authorization': jwtToken
+              'Authorization': prefs.getString('JwtToken')
             },
             body: body);
         if (response.statusCode == 200) {

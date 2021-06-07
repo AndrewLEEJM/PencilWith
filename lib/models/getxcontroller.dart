@@ -98,6 +98,10 @@ class Controller extends GetxController {
   //   update();
   // }
 
+  void justUpdate() {
+    update();
+  }
+
   void insertAllChapterList(ChapterObject co) {
     chapterRealList.add(co);
 

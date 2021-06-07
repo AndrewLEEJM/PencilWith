@@ -13,6 +13,7 @@ import 'package:pencilwith/pages/homepage.dart';
 import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class GoogleLogin extends StatelessWidget {
   @override
@@ -27,7 +28,8 @@ class GoogleLogin extends StatelessWidget {
         }
         if (snapshot.connectionState == ConnectionState.done) {
           returnGoogleToken().then((value) {
-            print('myAccessToken : $myAccessToken');
+            //공통변수에 google accesstoken넣고 끝.
+            print('google AccessToken : $myAccessToken');
           });
           return Scaffold(body: Center(child: CircularProgressIndicator()));
         }
@@ -40,8 +42,8 @@ class GoogleLogin extends StatelessWidget {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
+    //공통변수에 accesstoken넣고 끝.
     myAccessToken = googleAuth.accessToken.toString();
-
     _checkSignin();
   }
 
@@ -52,22 +54,27 @@ class GoogleLogin extends StatelessWidget {
           'Content-type': 'application/json ; charset=utf-8',
           'Accept': 'application/json ; charset=utf-8',
         },
-        body: '${myAccessToken.toString()}');
+        body: '$myAccessToken');
 
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse.toString());
 
       SigninObject signinObject =
           SigninObject.fromJson(json.decode(response.body));
-      print(signinObject.body.registered);
-      print(signinObject.body.jwtToken);
 
       if (signinObject.body.registered) {
-        jwtToken = signinObject.body.jwtToken;
+        //prefs = await SharedPreferences.getInstance();
+        prefs.setString('JwtToken', signinObject.body.jwtToken.toString());
+        prefs.setString('Div', 'google');
         Get.off(() => MainPage());
-      } else {
-        //Todo jwt Token
+      }
+      // else if (response.statusCode == 401 || response.statusCode == 400) {
+      //   prefs.setString('JwtToken', null);
+      //   prefs.setString('Div', null);
+      //   Get.off(() => MyApp());
+      // }
+      else {
+        //가입페이지로 이동
         Get.off(() => TermsPage());
       }
     } else {

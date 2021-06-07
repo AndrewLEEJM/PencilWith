@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 import 'package:pencilwith/main.dart';
 import 'package:pencilwith/pages/profile/manuscript.dart';
+import 'package:pencilwith/values/commonfunction.dart';
 
 import 'agreement/agreement.dart';
 
@@ -191,11 +193,20 @@ $title하시겠습니까?''',
                           children: [
                             RaisedButton(
                               onPressed: () {
-                                //todo google logout or kakao logout
-                                Firebase.initializeApp().then((value) {
-                                  FirebaseAuth.instance.signOut();
+                                if (prefs.getString('Div') == 'google') {
+                                  //todo google logout or kakao logout
+                                  Firebase.initializeApp().then((value) {
+                                    prefs.setString('JwtToken', null);
+                                    prefs.setString('Div', null);
+                                    FirebaseAuth.instance.signOut();
+                                    Get.off(() => MyApp());
+                                  });
+                                } else if (prefs.getString('Div') == 'kakao') {
+                                  logOutTalk();
+                                  prefs.setString('JwtToken', null);
+                                  prefs.setString('Div', null);
                                   Get.off(() => MyApp());
-                                });
+                                }
                                 //commonFireßbaseAuth.instance.signOut();
                               },
                               color: Colors.white,
@@ -220,5 +231,23 @@ $title하시겠습니까?''',
         ),
       ),
     );
+  }
+
+  logOutTalk() async {
+    try {
+      var code = await UserApi.instance.logout();
+      print(code.toString());
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  unlinkTalk() async {
+    try {
+      var code = await UserApi.instance.unlink();
+      print(code.toString());
+    } catch (e) {
+      print(e);
+    }
   }
 }

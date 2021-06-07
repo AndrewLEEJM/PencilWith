@@ -7,6 +7,8 @@ import 'package:pencilwith/pages/homepage.dart';
 import 'package:pencilwith/pages/profilepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
 
+//TODO JWTTOKEN 유효성을 확인 로직이 필요할것 같다.
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();

@@ -105,39 +105,42 @@ class _ContentState extends State<Content> {
                                     0) {
                               Get.snackbar('챕터 입력', '챕터의 제목 및 내용을 입력해주세요.',
                                   snackPosition: SnackPosition.TOP);
-                            }
+                            } else {
+                              final _dateFormatter = DateFormat('yyyyMMdd');
+                              int rowCount = 0;
+                              dbHelper
+                                  .getAllCount(Get.find<Controller>()
+                                      .currentProject
+                                      .value
+                                      .projectId
+                                      .toString())
+                                  .then((value) {
+                                print(value);
+                                rowCount = value + 1;
 
-                            final _dateFormatter = DateFormat('yyyyMMdd');
-                            int rowCount = 0;
-                            dbHelper
-                                .getAllCount(Get.find<Controller>()
-                                    .currentProject
-                                    .value
-                                    .projectId
-                                    .toString())
-                                .then((value) {
-                              print(value);
-                              rowCount = value + 1;
+                                ChapterObject ii = ChapterObject(
+                                    id:
+                                        '${Get.find<Controller>().currentProject.value.projectId}',
+                                    idx: rowCount.toString(),
+                                    title: '${textTitleCtl.text.toString()}',
+                                    content:
+                                        '${_textEditingController.text.toString()}',
+                                    date:
+                                        '${_dateFormatter.format(DateTime.now())}');
+                                dbHelper.insertChapter(ii).then((value) {
+                                  //TODO 챕터 리스트 만들고
 
-                              ChapterObject ii = ChapterObject(
-                                  id:
-                                      '${Get.find<Controller>().currentProject.value.projectId}',
-                                  idx: rowCount.toString(),
-                                  title: '${textTitleCtl.text.toString()}',
-                                  content:
-                                      '${_textEditingController.text.toString()}',
-                                  date:
-                                      '${_dateFormatter.format(DateTime.now())}');
-                              dbHelper.insertChapter(ii).then((value) {
-                                //TODO 챕터 리스트 만들고
+                                  _makingChapterList(Get.find<Controller>()
+                                      .currentProject
+                                      .value
+                                      .projectId
+                                      .toString());
 
-                                _makingChapterList(Get.find<Controller>()
-                                    .currentProject
-                                    .value
-                                    .projectId
-                                    .toString());
+                                  Get.snackbar('챕터저장 안내', '챕터가 저장 되었습니다.',
+                                      snackPosition: SnackPosition.TOP);
+                                });
                               });
-                            });
+                            }
                           });
                         }
                       },
@@ -196,7 +199,7 @@ class _ContentState extends State<Content> {
 
                                                       dense: true,
                                                       title: Text(
-                                                          '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}',
+                                                          '${index + 1}. ${Get.find<Controller>().chapterRealList[index].title}(챕터고유번호:${Get.find<Controller>().chapterRealList[index].idx})',
                                                           style: TextStyle(
                                                               fontSize: 15)),
                                                       trailing: TextButton(
@@ -221,6 +224,9 @@ class _ContentState extends State<Content> {
                                                                   .chapterRealList[
                                                                       index]
                                                                   .id);
+                                                              Get.find<
+                                                                      Controller>()
+                                                                  .justUpdate();
                                                             });
                                                           });
                                                           // closedKeyboard(

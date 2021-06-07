@@ -9,6 +9,7 @@ import 'package:pencilwith/models/signupobject.dart';
 import 'package:pencilwith/pages/mainpage.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Account extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _AccountState extends State<Account> {
   String selectedDay;
   String selectedLocation;
   String selectedExperience;
+  SharedPreferences prefs;
 
   TextEditingController _textEditingController = new TextEditingController();
   TextEditingController _textNickNameController = new TextEditingController();
@@ -160,22 +162,22 @@ class _AccountState extends State<Account> {
               DropdownButton(
                   value: this.selectedLocation,
                   items: [
-                    '서울특별시',
-                    '경기도',
-                    '인천광역시',
+                    '서울',
+                    '인천',
+                    '부산',
+                    '대구',
+                    '광주',
+                    '대전',
+                    '울산',
+                    '경기남부',
                     '강원도',
-                    '대전광역시',
-                    '세종',
-                    '충청북도',
                     '충청남도',
-                    '광주광역시',
+                    '충청북도',
+                    '전라남도',
                     '전라북도',
-                    '전라남도' '대구광역시',
-                    '울산광역시',
-                    '경상북도',
                     '경상남도',
-                    '부산광역시',
-                    '제주특별자치도'
+                    '경상북도',
+                    '세종'
                   ].map((e) {
                     return DropdownMenuItem(value: e, child: Text(e));
                   }).toList(),
@@ -334,7 +336,9 @@ class _AccountState extends State<Account> {
       print(signupObject.body.jwtToken);
 
       if (signupObject.body.registered) {
-        jwtToken = signupObject.body.jwtToken;
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString('JwtToken', signupObject.body.jwtToken.toString());
+        //jwtToken = signupObject.body.jwtToken;
         Get.off(() => MainPage());
       } else {
         throw Exception('You cannot join us!!');
