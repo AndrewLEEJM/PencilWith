@@ -7,8 +7,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
-import 'package:pencilwith/models/signupobject.dart';
-import 'package:pencilwith/pages/mainpage.dart';
+import 'package:pencilwith/models/userprofile.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/pages/profilepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
@@ -25,15 +24,23 @@ class _EditProfileState extends State<EditProfile> {
     final image = await ImagePicker.pickImage(source: ImageSource.gallery);
     var url =
         'https://pencil-with.com/api/my/user/${prefs.getString('UserID')}/profileImage';
-    FormData formdata = new FormData({'image': image});
+    List<int> imageBytes = image.readAsBytesSync();
+    String baseimage = base64Encode(imageBytes);
+    FormData formData = new FormData({"image": baseimage});
 
-    var response = await http.put(url,
-        headers: {
-          'Content-type': 'multipart/form-data',
-          'Accept': 'application/json ; charset=utf-8',
-          'Authorization': prefs.getString('JwtToken')
-        },
-        body: formdata);
+    var response = await http.put(url, headers: {
+      'Content-type': 'multipart/form-data',
+      'Accept': 'application/json; charset=utf-8',
+      'Authorization': prefs.getString('JwtToken')
+    }, body: {
+      'image': json.encode(baseimage)
+    });
+
+    if (response.statusCode == 200) {
+      print('성공');
+    } else {
+      throw Exception('${response.statusCode}');
+    }
 
     setState(() {
       _image = image;
@@ -369,17 +376,31 @@ class _EditProfileState extends State<EditProfile> {
     print(jsonDecode(response.body).toString());
 
     if (response.statusCode == 200) {
-      var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse.toString());
+      Navigator.pop(context);
+      _callProfile();
+    } else {
+      throw Exception('${response.statusCode}');
+    }
+  }
 
-      SignupObject signupObject =
-          SignupObject.fromJson(json.decode(response.body));
+  Future<void> _callProfile() async {
+    var url =
+        'https://pencil-with.com/api/my/user/' + prefs.getString('UserID');
+    var response = await http.get(
+      url,
+      headers: {
+        'Content-type': 'application/json ; charset=utf-8',
+        'Authorization': prefs.getString('JwtToken')
+      },
+    );
 
-      if (signupObject.body.registered) {
-        Get.off(() => ProfilePage());
-      } else {
-        throw Exception('You cannot join us!!');
-      }
+    if (response.statusCode == 200) {
+      print('response.body.toString()');
+      print(response.body.toString());
+
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      UserProfile uu = UserProfile.fromJson(jsonResponse);
+      Get.find<Controller>().insertProfile(uu);
     } else {
       throw Exception('${response.statusCode}');
     }

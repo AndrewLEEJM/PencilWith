@@ -28,7 +28,7 @@ class _AccountState extends State<Account> {
   TextEditingController _textEditingController = new TextEditingController();
   TextEditingController _textNickNameController = new TextEditingController();
 
-  DateFormat signinDateFormat = DateFormat('yyyy.MM.dd');
+  DateFormat signinDateFormat = DateFormat('yyyy-MM-dd');
 
   var years = [];
   var months = [];
