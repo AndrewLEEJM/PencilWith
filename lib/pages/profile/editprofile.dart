@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,6 +11,7 @@ import 'package:pencilwith/models/userprofile.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/pages/profilepage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
+import 'package:get/get.dart' hide Response;
 
 class EditProfile extends StatefulWidget {
   @override
@@ -21,20 +22,23 @@ class _EditProfileState extends State<EditProfile> {
   File _image;
 
   Future getImage() async {
+    Dio dio = Dio();
     final image = await ImagePicker.pickImage(source: ImageSource.gallery);
     var url =
         'https://pencil-with.com/api/my/user/${prefs.getString('UserID')}/profileImage';
     List<int> imageBytes = image.readAsBytesSync();
     String baseimage = base64Encode(imageBytes);
-    FormData formData = new FormData({"image": baseimage});
 
-    var response = await http.put(url, headers: {
-      'Content-type': 'multipart/form-data',
-      'Accept': 'application/json; charset=utf-8',
-      'Authorization': prefs.getString('JwtToken')
-    }, body: {
-      'image': json.encode(baseimage)
-    });
+    var formData = new FormData({'image': baseimage});
+    // var response = await http.put(url,
+    //     headers: {
+    //       'Content-type': 'multipart/form-data',
+    //       'Accept': 'application/json; charset=utf-8',
+    //       'Authorization': prefs.getString('JwtToken')
+    //     },
+    //     body: formData);
+
+    var response = await dio.put(url, data: formData);
 
     if (response.statusCode == 200) {
       print('성공');
