@@ -1,5 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:pencilwith/pages/subpages/recruitment.dart';
+
+class Gets {
+  final String careerTypes;
+  final String genderTypes;
+  final int maxAge;
+  final int minAge;
+  final String novelGenres;
+  final int page;
+  final int size;
+
+  Gets({this.careerTypes, this.genderTypes, this.maxAge, this.minAge, this.novelGenres, this.page, this.size});
+
+  factory Gets.fromJson(Map<String, dynamic> json) {
+    return Gets(
+      careerTypes: json['careerTypes'],
+      genderTypes: json['genderTypes'],
+      maxAge: json['maxAge'],
+      minAge: json['minAge'],
+      novelGenres: json['novelGenres'],
+      page: json['page'],
+      size: json['size'],
+    );
+  }
+}
+
+Future<Gets> fetchPost() async {
+  final url = 'https://pencil-with.com/swagger-ui.html#/crew-controller/getCrewRecruitsUsingGET_1';
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final jsonBody = json.decode(response.body);
+    return Gets.fromJson(jsonBody);
+  }
+  else {
+    throw Exception('Failed to load post');
+  }
+}
 
 //성별 필터
 class ftGender extends StatefulWidget {
@@ -151,7 +191,7 @@ class _ftCareerState extends State<ftCareer> {
         color: Color(0xffE3E3E3),
       ),
       child: DropdownButton(
-        hint: Text('경력'),
+        hint: Text('  경력'),
         value: _selectedValue,
         items: _valueList.map((value) {
           return DropdownMenuItem(value: value, child: Text(value));
@@ -176,7 +216,7 @@ class CrewPage extends StatefulWidget {
 }
 
 class _CrewPageState extends State<CrewPage> {
-  var testing =1;
+  var testing = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -186,7 +226,6 @@ class _CrewPageState extends State<CrewPage> {
               color: Colors.black,
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              //fontFamily: ,
           ),
           ),
           centerTitle: true,
@@ -209,10 +248,9 @@ class _CrewPageState extends State<CrewPage> {
               color: Color(0xffE5E5E5),
               margin: EdgeInsets.only(top: 8),
             ),
-            if(testing == 1)...{noOne()}
+            if(testing == true)...{noOne()}
             else...{
-              rectInfo(),
-              rectBtn,
+              recruitment(),
             },
           ],
         ),
@@ -240,14 +278,13 @@ class noOne extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.fromLTRB(24, 20, 40, 0),
+            padding: EdgeInsets.fromLTRB(24, 20, 40, 17),
             child: Text(
               '크루를 모집 중인 작가분이 현재 없습니다ㅠㅠ\n아래 모집하기 버튼을 통해 피드백 크루를 모아보세요!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
-                //fontFamily: ,
               ),
             ),
           ),
@@ -272,7 +309,7 @@ var rectBtn= ElevatedButton(
       color: Colors.white,
       fontSize: 14,
       fontWeight: FontWeight.w400,
-      //fontFamily: ,
+      fontStyle: FontStyle.italic
     ),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))
   ),
@@ -324,7 +361,7 @@ class _rectInfoState extends State<rectInfo> {
                 children: <Widget>[
                   Container(
                     margin: EdgeInsets.fromLTRB(14, 12, 0, 0),
-                      child: Text('제목',
+                      child: Text("title",
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 12,
@@ -431,156 +468,6 @@ class _rectInfoState extends State<rectInfo> {
                   fontSize: 12,
                 ),),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-//크루 모집 창
-class recruitment extends StatefulWidget {
-  @override
-  _recruitmentState createState() => _recruitmentState();
-}
-
-class _recruitmentState extends State<recruitment> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.arrow_back_ios),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.check),
-              tooltip: 'complete',
-              onPressed: () {}
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          TextField(
-            decoration: InputDecoration(
-              hintText: '제목',
-              hintStyle: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-              ),
-            ),
-          ),
-          Container(
-            width: 327,
-            height: 94,
-            margin: EdgeInsets.only(top: 16),
-            decoration: BoxDecoration(
-                border: Border.all(
-                  width: 1,
-                  color: Color(0xffE3E3E3),
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(5))
-            ),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(11, 14.5, 0, 0),
-                      child: Icon(
-                        Icons.person_outline,
-                        color: Color(0xff717171),
-                        size: 17,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(4, 8, 60, 0),
-                      child: Text('모집인원',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff717171),
-                        ),
-                      ),
-                    ),
-                    TextField(
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text('명'),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
-                      child: Icon(
-                        Icons.access_time,
-                        color: Color(0xff717171),
-                        size: 17,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
-                      child: Text('집필기간',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff717171),
-                        ),),
-                    ),
-                    TextField(
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(22, 4, 0, 0),
-                      child: Icon(
-                        Icons.import_contacts,
-                        color: Color(0xff717171),
-                        size: 17,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.fromLTRB(4, 4, 60, 0),
-                      child: Text('장       르',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff717171),
-                        ),),
-                    ),
-                    TextField(
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: '간단한 줄거리와 소개 등을 작성하고 모집글을 작성해보세요!',
-                    hintStyle: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    ),
-                  ),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
           ),
         ],
       ),

@@ -7,11 +7,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< Updated upstream
     version: "2.5.0-nullsafety.1"
-=======
-    version: "2.6.1"
->>>>>>> Stashed changes
   boolean_selector:
     dependency: transitive
     description:
@@ -102,11 +98,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< Updated upstream
     version: "0.1.3"
-=======
-    version: "1.1.0"
->>>>>>> Stashed changes
   file:
     dependency: transitive
     description:
@@ -151,7 +143,7 @@ packages:
     source: hosted
     version: "1.1.2"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -308,11 +300,7 @@ packages:
       name: source_span
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< Updated upstream
     version: "1.8.0-nullsafety.2"
-=======
-    version: "1.8.1"
->>>>>>> Stashed changes
   sqflite:
     dependency: "direct main"
     description:
@@ -368,11 +356,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< Updated upstream
     version: "0.2.19-nullsafety.2"
-=======
-    version: "0.3.0"
->>>>>>> Stashed changes
   typed_data:
     dependency: transitive
     description:
@@ -435,11 +419,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< Updated upstream
     version: "1.7.4+1"
-=======
-    version: "2.1.1"
->>>>>>> Stashed changes
   xdg_directories:
     dependency: transitive
     description:
@@ -455,10 +435,5 @@ packages:
     source: hosted
     version: "0.12.0"
 sdks:
-<<<<<<< Updated upstream
   dart: ">=2.10.2 <2.11.0"
   flutter: ">=1.22.2 <2.0.0"
-=======
-  dart: ">=2.13.0 <3.0.0"
-  flutter: ">=1.22.2"
->>>>>>> Stashed changes
