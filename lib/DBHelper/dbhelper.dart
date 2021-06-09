@@ -63,6 +63,13 @@ class DBHelper {
     return result;
   }
 
+  Future<List> deleteNote(String projectId, String eachIndex) async {
+    Database db = await this.db;
+    var result = await db.rawQuery(
+        'delete from $tableName where id=$projectId and idx=$eachIndex');
+    return result;
+  }
+
   //---------------------------------chapter sql-------
 
   Future<int> insertChapter(ChapterObject chapter) async {

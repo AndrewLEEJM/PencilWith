@@ -11,7 +11,6 @@ import 'package:pencilwith/models/noteobject.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pencilwith/values/bottom_value.dart';
-import 'package:pencilwith/values/commonfunction.dart';
 
 class MemoPage extends StatefulWidget {
   @override
@@ -147,6 +146,9 @@ class _MemoPageState extends State<MemoPage> {
                                             showMemoDialog(context, e);
                                           }
                                         }
+                                      },
+                                      onLongPress: () {
+                                        deleteNoteDialog(context, e.id, e.idx);
                                       },
                                       child: Container(
                                         child: Stack(children: [
@@ -323,6 +325,12 @@ class _MemoPageState extends State<MemoPage> {
               });
             });
           });
+        },
+        onLongPress: () {
+          deleteNoteDialog(
+              context,
+              Get.find<Controller>().getXTodoModelList[index].id,
+              Get.find<Controller>().getXTodoModelList[index].idx);
         },
         child: Row(
           children: [
@@ -510,7 +518,7 @@ class _MemoPageState extends State<MemoPage> {
                       borderRadius: BorderRadius.circular(30)),
                   color: Colors.grey,
                   textColor: Colors.white,
-                  child: Text('MEMO'),
+                  child: Text('SAVE'),
                   onPressed: () {
                     db.then((database) {
                       final _dateFormatter = DateFormat('yyyyMMdd');
@@ -548,7 +556,7 @@ class _MemoPageState extends State<MemoPage> {
                       borderRadius: BorderRadius.circular(30)),
                   color: Colors.grey,
                   textColor: Colors.white,
-                  child: Text('TODO'),
+                  child: Text('SAVE'),
                   onPressed: () {
                     db.then((database) {
                       final _dateFormatter = DateFormat('yyyyMMdd');
@@ -620,5 +628,46 @@ class _MemoPageState extends State<MemoPage> {
         );
       },
     );
+  }
+
+  Future<String> deleteNoteDialog(BuildContext context, String id, String idx) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Text('해당 Note를 삭제하시겠습니까?'),
+            // content: Text('프로젝트번호 : $id\n'
+            //     '프로젝트명 : ${listProject['title']}'),
+            actions: <Widget>[
+              MaterialButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('취소'),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  db.then((database) {
+                    dbHelper.deleteNote(id, idx).then((value) {
+                      Get.find<Controller>().noteListClear();
+                      final _noteList = dbHelper.getNotes(id);
+                      _noteList.then((note) {
+                        note.forEach((e) {
+                          Get.find<Controller>()
+                              .insertAllNoteList(NoteObject.fromJson(e));
+                        });
+                        Get.find<Controller>().splitList();
+                      });
+                    });
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Text('삭제', style: TextStyle(color: Colors.red)),
+              )
+            ],
+          );
+        });
   }
 }

@@ -8,12 +8,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pencilwith/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:pencilwith/models/signinobject.dart';
-import 'package:pencilwith/pages/account.dart';
-import 'package:pencilwith/pages/homepage.dart';
 import 'package:pencilwith/pages/mainpage.dart';
 import 'package:pencilwith/pages/termspage.dart';
 import 'package:pencilwith/values/commonfunction.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GoogleLogin extends StatelessWidget {
   @override
@@ -71,6 +68,7 @@ class GoogleLogin extends StatelessWidget {
         prefs.setString('JwtToken', signinObject.body.jwtToken.toString());
         prefs.setString('Div', 'google');
         prefs.setString('UserID', signinObject.body.userId);
+
         Get.off(() => MainPage());
       }
       // else if (response.statusCode == 401 || response.statusCode == 400) {

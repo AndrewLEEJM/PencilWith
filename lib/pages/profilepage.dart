@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/all.dart';
 import 'package:pencilwith/main.dart';
 import 'package:pencilwith/models/getxcontroller.dart';
@@ -24,6 +25,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfileState extends State<ProfilePage> {
   @override
   initState() {
+    print('show page this ${prefs.getString('userId')}');
     super.initState();
   }
 
@@ -317,17 +319,23 @@ $title하시겠습니까?''',
                           children: [
                             RaisedButton(
                               onPressed: () {
-                                if (prefs.getString('Div') == 'google') {
-                                  //todo google logout or kakao logout
-                                  Firebase.initializeApp().then((value) {
+                                if (title == '로그아웃') {
+                                  if (prefs.getString('Div') == 'google') {
+                                    Firebase.initializeApp().then((value) {
+                                      resetPrefs();
+                                      FirebaseAuth.instance.signOut();
+                                      googleSignIn.signOut();
+                                      Get.off(() => MyApp());
+                                    });
+                                  } else if (prefs.getString('Div') ==
+                                      'kakao') {
+                                    logOutTalk();
                                     resetPrefs();
-                                    FirebaseAuth.instance.signOut();
                                     Get.off(() => MyApp());
-                                  });
-                                } else if (prefs.getString('Div') == 'kakao') {
-                                  logOutTalk();
-                                  resetPrefs();
-                                  Get.off(() => MyApp());
+                                  }
+                                } else if (title == '회원탈퇴') {
+                                  dropOut(
+                                      Get.find<Controller>().userProfile.id);
                                 }
                               },
                               color: Colors.white,
@@ -374,5 +382,26 @@ $title하시겠습니까?''',
     prefs.setString('JwtToken', null);
     prefs.setString('Div', null);
     prefs.setString('UserId', null);
+  }
+
+  Future<void> dropOut(String userId) async {
+    var url = 'https://pencil-with.com/api/my/user/$userId';
+
+    print(url);
+
+    var response = await http.delete(
+      url,
+      headers: {
+        'Content-type': 'application/json ; charset=utf-8',
+        'Authorization': prefs.getString('JwtToken')
+      },
+    );
+
+    if (response.statusCode == 200) {
+      resetPrefs();
+      Get.off(() => MyApp());
+    } else {
+      throw Exception('${response.statusCode}');
+    }
   }
 }

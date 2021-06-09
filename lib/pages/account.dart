@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:pencilwith/models/nickcheck.dart';
 import 'package:pencilwith/models/signupobject.dart';
 import 'package:pencilwith/pages/mainpage.dart';
 import 'package:http/http.dart' as http;
+import 'package:pencilwith/values/bottom_value.dart';
 import 'package:pencilwith/values/commonfunction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,12 +25,14 @@ class _AccountState extends State<Account> {
   String selectedDay;
   String selectedLocation;
   String selectedExperience;
-  SharedPreferences prefs;
+  //SharedPreferences prefs;
+  bool nickCheck;
 
   TextEditingController _textEditingController = new TextEditingController();
   TextEditingController _textNickNameController = new TextEditingController();
 
-  DateFormat signinDateFormat = DateFormat('yyyy.MM.dd');
+  DateFormat signinDateFormat = DateFormat('yyyy-MM-dd');
+  final GlobalKey<FormState> _formKey = new GlobalKey();
 
   var years = [];
   var months = [];
@@ -74,12 +78,68 @@ class _AccountState extends State<Account> {
         children: [
           imageSection,
           Container(
-            padding: EdgeInsets.only(left: 100, right: 100),
-            child: TextField(
-              controller: _textNickNameController,
-              decoration: InputDecoration(
-                labelText: '닉네임',
-              ),
+            padding: EdgeInsets.only(left: 30, right: 10),
+            child: Row(
+              children: [
+                Expanded(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            nickCheck = null;
+                            if (value.length > 10) {
+                              _formKey.currentState.validate();
+                            }
+                          });
+                        },
+                        controller: _textNickNameController,
+                        decoration: InputDecoration(
+                          hintText: '닉네임',
+                        ),
+                        validator: (_) {
+                          if (nickCheck ?? false) {
+                            return '이미 등록된 닉네임 입니다.';
+                          }
+                          if (_textNickNameController.text.length > 10) {
+                            return '10자리 내로 만들어주세요.';
+                          }
+
+                          return null;
+                        },
+                      ),
+                    ),
+                    Visibility(
+                      child: Container(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Text(
+                          '해당 닉네임을 사용하실수 있습니다.',
+                          style: TextStyle(color: Colors.blue, fontSize: 12),
+                        ),
+                      ),
+                      visible: nickCheck == null ? false : !nickCheck,
+                    )
+                  ],
+                )),
+                SizedBox(
+                  width: 10,
+                ),
+                RaisedButton(
+                  color: bottomNavigatorColor,
+                  onPressed: checkNickName,
+                  child: Text(
+                    '중복확인',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
+                  ),
+                  elevation: 0,
+                )
+              ],
             ),
           ),
           Row(
@@ -263,16 +323,9 @@ class _AccountState extends State<Account> {
                   this.selectedExperience != null &&
                   this.selectedDay != null &&
                   this.selectedLocation != null &&
+                  this.nickCheck == false &&
                   this.selectedMonth != null) {
                 callSignUp();
-
-                print('selectedYear:$selectedYear');
-                print('selectedMonth:$selectedMonth');
-                print('selectedDay:$selectedDay');
-                print('selectedExperience:$selectedExperience');
-                print('selectedLocation:$selectedLocation');
-
-                // Get.off(MainPage());
               } else {
                 Get.snackbar('Note', 'Please fill the information',
                     snackPosition: SnackPosition.BOTTOM);
@@ -323,28 +376,61 @@ class _AccountState extends State<Account> {
         },
         body: jsonEncode(_body));
 
-    print(jsonDecode(response.body).toString());
-
     if (response.statusCode == 200) {
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse.toString());
 
       SignupObject signupObject =
           SignupObject.fromJson(json.decode(response.body));
 
-      print(signupObject.body.registered);
-      print(signupObject.body.jwtToken);
-
       if (signupObject.body.registered) {
-        prefs = await SharedPreferences.getInstance();
+        //prefs = await SharedPreferences.getInstance();
+
         prefs.setString('JwtToken', signupObject.body.jwtToken.toString());
-        //jwtToken = signupObject.body.jwtToken;
+
+        if (buttonDiv == 'google') {
+          prefs.setString('Div', 'google');
+        } else {
+          prefs.setString('Div', 'kakao');
+        }
+
+        prefs.setString('UserID', signupObject.body.userId);
+        print('가입이후 이동');
         Get.off(() => MainPage());
       } else {
         throw Exception('You cannot join us!!');
       }
     } else {
       throw Exception('${response.statusCode}');
+    }
+  }
+
+  Future<void> checkNickName() async {
+    if (_textNickNameController.text.length > 10) {
+      _formKey.currentState.validate();
+    } else {
+      var url =
+          'https://pencil-with.com/api/auth/duplication/${_textNickNameController.text}';
+
+      var response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json ; charset=utf-8',
+          'Accept': 'application/json ; charset=utf-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = jsonDecode(response.body);
+        NickCheck nc = NickCheck.fromJson(jsonResponse);
+
+        setState(() {
+          nickCheck = nc.body;
+        });
+
+        print(nickCheck);
+
+        _formKey.currentState.validate();
+      }
     }
   }
 }

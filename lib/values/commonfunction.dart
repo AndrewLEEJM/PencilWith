@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 closedKeyboard(BuildContext ctx) async {
@@ -7,14 +8,15 @@ closedKeyboard(BuildContext ctx) async {
 
 String myAccessToken = '';
 
-SharedPreferences prefs;
+GoogleSignIn googleSignIn = GoogleSignIn();
 
-// String jwtToken =
-//     'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyMSIsImF1dGgiOiJST0xFX1VTRVIsIFJPTEVfQURNSU4iLCJleHAiOjE2MjM2ODc4NDl9.tt1J1_TddRAEl2UZOfmtQgvJMjIafjE72LJMdmRDyJ9f7_2oT-uj3C8S4MP2iz7GkcJcUWSj2Va2KSx5Klle0g';
+SharedPreferences prefs;
 
 double deviceWidth = 0.0;
 double deviceHeight = 0.0;
 double deviceRatio = 0.0;
+
+String buttonDiv = '';
 
 List<Widget> tabs = [
   Tab(
@@ -31,3 +33,6 @@ List<Widget> tabs = [
 enum apiNames { callAllProject, createProject, callEachProject, deleteProject }
 
 DateTime currentBackPressTime;
+
+TextEditingController newWriteTitleController = TextEditingController();
+TextEditingController newWriteContentController = TextEditingController();

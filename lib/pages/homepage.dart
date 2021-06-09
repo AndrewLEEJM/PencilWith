@@ -95,12 +95,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Text(element['title']),
                 ),
                 onTap: () {
+                  ///개별 프로젝트 dropdown call(include 노트조회)
                   _callBackServer(apiNames.callEachProject,
                       index: '${element['projectId'].toString()}');
 
+                  ///전체 챕터리스트 call
                   Get.find<Controller>().chapterListClear();
-                  //챕터 부르기
                   _makingChapterList(element['projectId'].toString());
+
                   Navigator.pop(context);
                 },
                 onLongPress: () {
@@ -491,6 +493,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void _makingChapterList(String projectId) {
     Get.find<Controller>().chapterListClear();
+    newWriteTitleController.text = '';
+    newWriteContentController.text = '';
     db.then((database) {
       final _chapterList = dbHelper.getChapter(projectId);
       _chapterList.then((note) {

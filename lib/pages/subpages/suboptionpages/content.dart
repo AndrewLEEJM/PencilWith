@@ -10,38 +10,24 @@ import 'package:pencilwith/values/commonfunction.dart';
 //This could be StatelessWidget but it won't work on Dialogs for now until this issue is fixed: https://github.com/flutter/flutter/issues/45839
 class Content extends StatefulWidget {
   final bool isDialog;
-  final textTitleController;
 
-  const Content(this.textTitleController, {Key key, this.isDialog = false})
-      : super(key: key);
+  const Content({Key key, this.isDialog = false}) : super(key: key);
 
   @override
-  _ContentState createState() => _ContentState(textTitleController);
+  _ContentState createState() => _ContentState();
 }
 
 class _ContentState extends State<Content> {
   final FocusNode _nodeText2 = FocusNode();
-  final textTitleCtl;
 
   DBHelper dbHelper;
   var db;
 
-  _ContentState(this.textTitleCtl);
-
-  TextEditingController _textEditingController = TextEditingController();
+//  TextEditingController newWriteContentController = TextEditingController();
   Controller getc = Get.put(Controller());
 
   String codeDialog;
   String valueText;
-
-  List<String> chapterList = [
-    '무지개',
-    '그때그날',
-    '사건',
-    '무지개',
-    '어머니',
-    '아버지',
-  ];
 
   KeyboardActionsConfig _buildConfig(BuildContext context) {
     return KeyboardActionsConfig(
@@ -55,17 +41,14 @@ class _ContentState extends State<Content> {
             focusNode: _nodeText2,
             footerBuilder: (_) => PreferredSize(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Obx(() =>
-                        Text('위치 : ${getc.textIndex}/${getc.maxTextCount}')),
-                    Spacer(),
+                    Obx(() => Text(
+                          '위치 : ${getc.textIndex}/${getc.maxTextCount}',
+                        )),
                     IconButton(
                         icon: Icon(Icons.arrow_back_ios_sharp),
-                        onPressed: () => _textEditingController.selection =
+                        onPressed: () => newWriteContentController.selection =
                             int.parse(getc.textIndex.value.toString()) == 0
                                 ? TextSelection.collapsed(offset: 0)
                                 : TextSelection.collapsed(
@@ -74,19 +57,25 @@ class _ContentState extends State<Content> {
                                         1)),
                     IconButton(
                         icon: Icon(Icons.arrow_forward_ios_sharp),
-                        onPressed: () => _textEditingController.selection = int
-                                    .parse(getc.textIndex.value.toString()) ==
+                        onPressed: () => newWriteContentController
+                            .selection = int.parse(
+                                    getc.textIndex.value.toString()) ==
                                 int.parse(getc.maxTextCount.value.toString())
                             ? TextSelection.collapsed(offset: 0)
                             : TextSelection.collapsed(
                                 offset:
                                     int.parse(getc.textIndex.value.toString()) +
                                         1)),
-                    SizedBox(
-                      width: 20,
-                    ),
                     GestureDetector(
-                      child: Text('저장'),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        child: Text(
+                          '저장',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        decoration: BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.black),
+                      ),
                       onTap: () {
                         if (Get.find<Controller>()
                                 .currentProject
@@ -97,11 +86,13 @@ class _ContentState extends State<Content> {
                               snackPosition: SnackPosition.TOP);
                         } else {
                           db.then((database) {
-                            if (_textEditingController.text
+                            if (newWriteContentController.text
                                         .replaceAll(' ', '')
                                         .length ==
                                     0 ||
-                                textTitleCtl.text.replaceAll(' ', '').length ==
+                                newWriteTitleController.text
+                                        .replaceAll(' ', '')
+                                        .length ==
                                     0) {
                               Get.snackbar('챕터 입력', '챕터의 제목 및 내용을 입력해주세요.',
                                   snackPosition: SnackPosition.TOP);
@@ -122,9 +113,10 @@ class _ContentState extends State<Content> {
                                     id:
                                         '${Get.find<Controller>().currentProject.value.projectId}',
                                     idx: rowCount.toString(),
-                                    title: '${textTitleCtl.text.toString()}',
+                                    title:
+                                        '${newWriteTitleController.text.toString()}',
                                     content:
-                                        '${_textEditingController.text.toString()}',
+                                        '${newWriteContentController.text.toString()}',
                                     date:
                                         '${_dateFormatter.format(DateTime.now())}');
                                 dbHelper.insertChapter(ii).then((value) {
@@ -145,7 +137,16 @@ class _ContentState extends State<Content> {
                         }
                       },
                     ),
-                    Spacer(),
+                    IconButton(
+                      icon: Icon(
+                        Icons.fiber_new_rounded,
+                        size: 30,
+                      ),
+                      onPressed: () {
+                        newWriteTitleController.text = '';
+                        newWriteContentController.text = '';
+                      },
+                    ),
                     GestureDetector(
                       child: Row(
                         children: [
@@ -263,9 +264,6 @@ class _ContentState extends State<Content> {
                                 ));
                       },
                     ),
-                    SizedBox(
-                      width: 15,
-                    ),
                   ],
                 ),
                 preferredSize: Size.fromHeight(50.0))),
@@ -275,10 +273,11 @@ class _ContentState extends State<Content> {
 
   @override
   void initState() {
-    _textEditingController.addListener(() {
-      Get.find<Controller>().maxTextCount(_textEditingController.text.length);
+    newWriteContentController.addListener(() {
+      Get.find<Controller>()
+          .maxTextCount(newWriteContentController.text.length);
       Get.find<Controller>().textIndex.value =
-          int.parse(_textEditingController.selection.base.offset.toString());
+          int.parse(newWriteContentController.selection.base.offset.toString());
     });
     dbHelper = DBHelper();
     db = dbHelper.initDatabase();
@@ -299,7 +298,7 @@ class _ContentState extends State<Content> {
               TextStyle(fontSize: (MediaQuery.of(context).size.width * 0.045)),
           keyboardType: TextInputType.multiline,
           focusNode: _nodeText2,
-          controller: _textEditingController,
+          controller: newWriteContentController,
           decoration: InputDecoration.collapsed(
               hintText: "소설을 집필해보세요",
               border: InputBorder.none,
@@ -307,20 +306,6 @@ class _ContentState extends State<Content> {
                   color: Colors.grey.withOpacity(0.4),
                   fontWeight: FontWeight.normal)),
         ),
-      ),
-    );
-  }
-
-  void _prefixTextSelection(String left, TextSelection selection) {
-    final currentTextValue = _textEditingController.value.text;
-    final middle = selection.textInside(currentTextValue);
-    final newTextValue = selection.textBefore(currentTextValue) +
-        '$left$middle' +
-        selection.textAfter(currentTextValue);
-    _textEditingController.value = _textEditingController.value.copyWith(
-      text: newTextValue,
-      selection: TextSelection.collapsed(
-        offset: selection.baseOffset + left.length + middle.length,
       ),
     );
   }
@@ -361,28 +346,12 @@ class _ContentState extends State<Content> {
     });
   }
 
-  void _insertChapterApi(String title, String id) {
-    // print(int.parse(id));
-    //
-    // db.then((database) {
-    //   final _chapterList = dbHelper.insertChapter(ChapterObject(
-    //     id: ,content: ,
-    //   ));
-    //   _chapterList.then((note) {
-    //     note.forEach((e) {
-    //       Get.find<Controller>()
-    //           .insertAllChapterList(ChapterObject.fromJson(e));
-    //     });
-    //   });
-    // });
-  }
-
   void _getEachChapterSqlflite(String id, String idx) {
     db.then((database) {
       final _chapterEachList = dbHelper.getEachChapter(id, idx);
       _chapterEachList.then((chapter) {
-        widget.textTitleController.text = chapter.first['title'];
-        _textEditingController.text = chapter.first['content'];
+        newWriteTitleController.text = chapter.first['title'];
+        newWriteContentController.text = chapter.first['content'];
         Get.back();
       });
     });

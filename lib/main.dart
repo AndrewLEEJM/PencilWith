@@ -112,12 +112,14 @@ class _MyAppState extends State<MyApp> {
         child: GestureDetector(
           onTap: () {
             if (vendor == '카카오 로그인') {
+              buttonDiv = 'kakao';
               if (_isKakaoTalkInstalled) {
                 _loginWithTalk();
               } else {
                 _loginWithKakao();
               }
             } else {
+              buttonDiv = 'google';
               Get.off(() => GoogleLogin());
             }
           },
